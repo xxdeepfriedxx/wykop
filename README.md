@@ -97,6 +97,47 @@ This constructs a new instance of WykopJS, available options are:
 For an instance to successfully initialize, you need to provide at least (a) an `appkey` and a `secret`, (b) a `rtoken` or (c) a `token`. The best option is to provide an `appkey` and `secret`, that way we can generate tokens whenever we need a new one and you don't need to keep track of them. The second best option is to provide a `rtoken`, you'll be logged in and we can generate new tokens, but you'll need to keep track of the latest `rtoken` somewhere, so you can easily create a new Wykop instance. The last option is to provide a `token` but you'll be limited by the expiration date on the token, so it'll just stop working after some time
 
 ### Available functions directly on the `Wykop` object:
+
+```javascript
+w.entry(id)
+// returns an empty Entry object that can be used to access its class functions
+```
+```javascript
+w.entryComment({ id, entryId })
+// returns an empty EntryComment object that can be used to access its class functions
+```
+```javascript
+w.link(id)
+// returns an empty Link object that can be used to access its class functions
+```
+```javascript
+w.linkComment({ id, linkId })
+// returns an empty LinkComment object that can be used to access its class functions
+```
+```javascript
+w.article(id)
+// returns an empty Article object that can be used to access its class functions
+```
+```javascript
+w.draft(id)
+// returns an empty Draft object that can be used to access its class functions
+```
+```javascript
+w.profile(username)
+// returns an empty Profile object that can be used to access its class functions
+```
+```javascript
+w.tag(tag)
+// returns an empty Tag object that can be used to access its class functions
+```
+```javascript
+w.conversation(username)
+// returns an empty Conversation object that can be used to access its class functions
+```
+```javascript
+w.badge(slug)
+// returns an empty Badge object that can be used to access its class functions
+```
 ```javascript
 w.getEntry('1234')
 // returns a Promise that resolves to an Entry object
@@ -156,6 +197,14 @@ w.getDraft('3hbh2jg3b')
 ```javascript
 w.getConversation('wykop')
 // returns a Promise that resolves to a Conversation object
+```
+```javascript
+getTag = function(tag, config) {
+// returns a Promise that resolves to a Tag object
+```
+```javascript
+getTagContent = function(tag, config) {
+// returns a Promise that resolves to a object, where object.items is a list of Entry and Link objects
 ```
 ```javascript
 w.getProfile('m__b')

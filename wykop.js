@@ -14,6 +14,7 @@ import LinkRelated from './lib/wykop-link-related.js';
 import Draft from './lib/wykop-link-draft.js';
 import Article from './lib/wykop-article.js';
 import Profile from './lib/wykop-profile.js';
+import Tag from './lib/wykop-tag.js';
 import Conversation from './lib/wykop-conversation.js';
 import Badge from './lib/wykop-badge.js';
 import Bucket from './lib/wykop-bucket.js';
@@ -37,16 +38,66 @@ export default class Wykop extends API {
 		return proxies ? proxymise(this) : this
 	}
 
+	// === Objects
+	entry = function(id) {
+		assert(id, this.#errors.assert.notSpecified('id'));
+		return new Entry(this.#core, { id: id })
+	}
+
+	entryComment = function({ id, entryId } = {}) {
+		assert(id, this.#errors.assert.notSpecified('id'));
+		assert(entryId, this.#errors.assert.notSpecified('entryId'));
+		return new EntryComment(this.#core, { id: id, parent: { id: entryId }})
+	}
+
+	link = function(id) {
+		assert(id, this.#errors.assert.notSpecified('id'));
+		return new Link(this.#core, { id: id })
+	}
+
+	linkComment = function({ id, linkId } = {}) {
+		assert(id, this.#errors.assert.notSpecified('id'));
+		assert(linkId, this.#errors.assert.notSpecified('linkId'));
+		return new LinkComment(this.#core, { id: id, parent: { id: linkId }});
+	}
+
+	article = function(id) {
+		assert(id, this.#errors.assert.notSpecified('id'));
+		return new Article(this.#core, { id: id })
+	}
+
+	draft = function(id) {
+		assert(key, this.#errors.assert.notSpecified('key'));
+		return new Draft(this.#core, { key: key })
+	}
+
+	profile = function(username) {
+		assert(username, this.#errors.assert.notSpecified('username'));
+		return new Profile(this.#core, { username: username });
+	}
+
+	tag = function(tag) {
+		assert(tag, this.#errors.assert.notSpecified('tag'));
+        return new Tag(this.#core, { name: tag })
+	}
+
+	conversation = function(username) {
+		assert(username, this.#errors.assert.notSpecified('username'));
+        return new Conversation(this.#core, { user: { username: username }})
+	}
+
+	badge = function(slug) {
+		assert(slug, this.#errors.assert.notSpecified('slug'));
+		return new Badge(this.#core, { slug: slug })
+	}
+
 	// === Content ===
 	getEntry = function(id) {
-		assert(id, this.#errors.assert.notSpecified('id'));
-		return new Entry(this.#core, { id: id }).get();
+		return this.entry(id).get();
 	}
 
 	getEntryComment = function({ id, entryId } = {}) {
-		assert(id, this.#errors.assert.notSpecified('id'));
-		assert(entryId, this.#errors.assert.notSpecified('entryId'));
-		return new EntryComment(this.#core, { id: id, parent: { id: entryId }}).get();
+		return this.entryComment({ id: id, entryId: entryId });
 	}
 
 	submitEntry = function({ content = null, photo = null, embed = null, survey = null, adult = false } = {}) {
@@ -63,7 +114,7 @@ export default class Wykop extends API {
 
 	submitEntryComment = function({ entryId = null, content = null, photo = null, embed = null, survey = null, adult = false } = {}) {
 		assert(entryId, this.#errors.assert.notSpecified('entryId'));
-		return new EntryComment(this.#core, { parent: { id: entryId }}).add({ 
+		return this.entry(entryId).submitComment({ 
 			content: content, 
 			photo: photo, 
 			embed: embed, 
@@ -125,14 +176,11 @@ export default class Wykop extends API {
 	}
 
 	getLink = function(id) {
-		assert(id, this.#errors.assert.notSpecified('id'));
-		return new Link(this.#core, { id: id }).get();
+		return this.link(id).get();
 	}
 
 	getLinkComment = function({ id, linkId } = {}) {
-		assert(id, this.#errors.assert.notSpecified('id'));
-		assert(linkId, this.#errors.assert.notSpecified('linkId'));
-		return new LinkComment(this.#core, { id: id, parent: { id: linkId }}).get();
+		return this.linkComment({ id: id, linkId: linkId }).get();
 	}
 
 	createURLDraft = function(url) {
@@ -145,8 +193,7 @@ export default class Wykop extends API {
 	}
 
 	getArticle = function(id) {
-		assert(id, this.#errors.assert.notSpecified('id'));
-		return new Article(this.#core, { id: id }).get();
+		this.article(id).get();
 	}
 
 	createArticleDraft = function({ title = null, content = null, html = null } = {}) {
@@ -163,18 +210,23 @@ export default class Wykop extends API {
 	}
 
 	getDraft = function(key) {
-		assert(key, this.#errors.assert.notSpecified('key'));
-		return new Draft(this.#core, { key: key }).get()
+		this.draft(key).get()
 	}
 
     getConversation = function(username) {
-		assert(username, this.#errors.assert.notSpecified('username'));
-        return new Conversation(this.#core, { user: { username: username }}).get()
+		this.conversation(username).get()
+    }
+
+    getTag = function(tag, config) {
+		this.tag(tag).get()
+    }
+
+    getTagContent = function(tag, config) {
+		this.tag(tag).getContent(config)
     }
 
 	getProfile = function(username) {
-		assert(username, this.#errors.assert.notSpecified('username'));
-		return new Profile(this.#core, { username: username }).get();
+		return this.profile(username).get();
 	}
 
 	getMe = async function() {
@@ -186,8 +238,7 @@ export default class Wykop extends API {
 	}
 
 	getBadge = function(slug) {
-		assert(slug, this.#errors.assert.notSpecified('slug'));
-		return new Badge(this.#core, { slug: slug }).get();
+		this.badge(slug).get();
 	}
 
 	// Get links that are on the homepage or in upcomming
