@@ -1,0 +1,18 @@
+{
+  "name": "wykop",
+  "type": "module",
+  "version": "1.0.4",
+  "description": "Wrapper for the new Wykop API v3 written in NodeJS",
+  "homepage": "https://github.com/xxdeepfriedxx/wykop",
+  "license" : "SEE LICENSE IN LICENSE.md",
+  "main": "wykop.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "xxdeepfriedxx",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.27.2",
+    "proxymise": "^1.0.2"
+  }
+}
