@@ -8,6 +8,7 @@ A wrapper for the new Wykop API v3 written in NodeJS
 - Most common objects are wrapped in a class
 - The ["Documentation"](#documentation) is currently just a list of functions that are available with their return value
 - Wykop.pl seems to be working on the API, they might occasionally break something
+- For an example inplementation see [WykopMonitorJS](https://github.com/xxdeepfriedxx/wykop-monitor)
 
 ## Getting started
 ### Add the package
