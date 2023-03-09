@@ -22,8 +22,6 @@ import {AccountSettings, ProfileSettings} from './lib/wykop-settings.js';
 
 export default class Wykop extends API {
 	#core; #database; #instance; #errors
-	#security; #connect; #users; #profile; #settings; #pm; #observed; #buckets; #notifications; #notes; #favourites; #link; #links; #hits; #article; #entry; #entries; #tags; #search; #categories; #badge; #badges; #ranking; #media; #reports; #contact; #system; #config; #acl
-
 	constructor({ appkey, secret, token, rtoken, environment, proxies = true, debug = false } = {}) {
 		if ((!token || typeof token !== 'string') &&
 			(!rtoken || typeof rtoken !== 'string') &&
