@@ -86,13 +86,13 @@ This constructs a new instance of WykopJS, available options are:
 
 | Option                | Default                     | Description |
 | ---                   | ---                         | --- |
-| `config.appkey`       | `null`                      | <optional> The appkey you received from Wykop |
-| `config.secret`       | `null`                      | <optional> The secret you received from Wykop |
-| `config.token`        | `null`                      | <optional> Your access token |
-| `config.rtoken`       | `null`                      | <optional> Your refresh token |
-| `config.environment`  | `https://wykop.pl/api/v3`   | <optional> The environment (we probably never need this) |
-| `config.proxies`      | `true`                      | <optional> Proxies allow for Promise chaining but you can turn them off here |
-| `config.debug`        | `false`                     | <optional> Mostly just logs the requests and responses we get from the API |
+| `config.appkey`       | `null`                      | \<optional> The appkey you received from Wykop |
+| `config.secret`       | `null`                      | \<optional> The secret you received from Wykop |
+| `config.token`        | `null`                      | \<optional> Your access token |
+| `config.rtoken`       | `null`                      | \<optional> Your refresh token |
+| `config.environment`  | `https://wykop.pl/api/v3`   | \<optional> The environment (we probably never need this) |
+| `config.proxies`      | `true`                      | \<optional> Proxies allow for Promise chaining but you can turn them off here |
+| `config.debug`        | `false`                     | \<optional> Mostly just logs the requests and responses we get from the API |
 
 For an instance to successfully initialize, you need to provide at least (a) an `appkey` and a `secret`, (b) a `rtoken` or (c) a `token`. The best option is to provide an `appkey` and `secret`, that way we can generate tokens whenever we need a new one and you don't need to keep track of them. The second best option is to provide a `rtoken`, you'll be logged in and we can generate new tokens, but you'll need to keep track of the latest `rtoken` somewhere, so you can easily create a new Wykop instance. The last option is to provide a `token` but you'll be limited by the expiration date on the token, so it'll just stop working after some time
 
