@@ -60,7 +60,7 @@ const Wykop = import('wykop');
 })();
 ```
 
-- See also: [Example: Login to Wykop Connect](/examples/example-login-wykop-connect.js)
+- See also: [Example: Simple wołacz](/examples/example-wołacz.js)
 
 ## "Documentation"
 - [`new Wykop(config)`](#new-wykopconfig)
@@ -632,7 +632,7 @@ link.getComment('4321')
 // returns a Promise that resolves to a LinkComment object
 ```
 ```javascript
-link.addComment({ content: 'Nice link!', photo: '3hbh2jg3b', embed: '3hbh2jg3b', adult: false })
+link.submitComment({ content: 'Nice link!', photo: '3hbh2jg3b', embed: '3hbh2jg3b', adult: false })
 // returns a Promise that resolves to a LinkComment object
 ```
 ```javascript
@@ -644,7 +644,7 @@ link.getRelatedLinks()
 // returns a Promise that resolves to an object, where object.items is a list of Related objects
 ```
 ```javascript
-link.addRelatedLink({ title, url, adult })
+link.submitRelatedLink({ title, url, adult })
 // returns a Promise that resolves to a Related object
 ```
 ```javascript
@@ -702,7 +702,7 @@ comment.getComments({ page: null })
 // returns a Promise that resolves to an object, where objects.items is a list of LinkComment objects
 ```
 ```javascript
-comment.addComment({ content: 'Nice link!', photo: '3hbh2jg3b', embed: '3hbh2jg3b', adult: true })
+comment.submitComment({ content: 'Nice link!', photo: '3hbh2jg3b', embed: '3hbh2jg3b', adult: true })
 // returns a Promise that resolves to a LinkComment object
 ```
 ```javascript
