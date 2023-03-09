@@ -29,9 +29,6 @@ const upvoterLists = [
 		users = [...upvoters.items.map(x => '@' + x.username)]
 	}
 
-	// here saveRefreshToken() would be a function that saves your last rtoken to a file
-	saveRefreshToken(await w.databaseExtract());
-
 	// remove duplicate users in our list
 	users = users.filter((value, index, array) => array.indexOf(value) === index );
 
@@ -45,5 +42,8 @@ const upvoterLists = [
 		// Add our comment to our entry
 		await w.entry(newEntryId).submitComment({ content: '!' + chunk })
 	}
+
+	// here saveRefreshToken() would be a function that saves your last rtoken to a file
+	saveRefreshToken(await w.databaseExtract());
 
 })();
