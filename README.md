@@ -100,43 +100,43 @@ This constructs a new instance of WykopJS, available options are:
 ### Available functions directly on the `Wykop` object:
 
 ```javascript
-w.entry(id)
+w.entry('1234')
 // returns an empty Entry object that can be used to access its class functions
 ```
 ```javascript
-w.entryComment({ id, entryId })
+w.entryComment({ id: '4321', entryId: 1234 })
 // returns an empty EntryComment object that can be used to access its class functions
 ```
 ```javascript
-w.link(id)
+w.link('1234')
 // returns an empty Link object that can be used to access its class functions
 ```
 ```javascript
-w.linkComment({ id, linkId })
+w.linkComment({ id: '4321', linkId: '1234' })
 // returns an empty LinkComment object that can be used to access its class functions
 ```
 ```javascript
-w.article(id)
+w.article('1234')
 // returns an empty Article object that can be used to access its class functions
 ```
 ```javascript
-w.draft(id)
+w.draft('3hbh2jg3b')
 // returns an empty Draft object that can be used to access its class functions
 ```
 ```javascript
-w.profile(username)
+w.profile('wykop')
 // returns an empty Profile object that can be used to access its class functions
 ```
 ```javascript
-w.tag(tag)
+w.tag('heheszki')
 // returns an empty Tag object that can be used to access its class functions
 ```
 ```javascript
-w.conversation(username)
+w.conversation('wykop')
 // returns an empty Conversation object that can be used to access its class functions
 ```
 ```javascript
-w.badge(slug)
+w.badge('3hbh2jg3b')
 // returns an empty Badge object that can be used to access its class functions
 ```
 ```javascript

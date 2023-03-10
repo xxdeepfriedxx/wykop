@@ -1,6 +1,6 @@
 // A simple example where you can mention all the users that upvoted specific entries
 
-import Wykop from '../wykop.js';
+import Wykop from 'wykop';
 
 // 20 for green account, 50 for orange or 150 for red
 const accountLimit = 50;
