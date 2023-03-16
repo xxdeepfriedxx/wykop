@@ -228,7 +228,7 @@ export default class Wykop extends API {
 	}
 
 	getMe = async function() {
-		return this.getProfile(await this.getLoggedUser());
+		return this.getProfile(await this.getLoggedUsername());
 	}
 
 	getMeShort = function() {
