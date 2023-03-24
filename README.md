@@ -16,18 +16,10 @@ A wrapper for the new Wykop API v3 written in NodeJS
 npm i wykop
 ```
 ### Import WykopJS and initialise
-#### CommonJS
 ```javascript
-const Wykop = import('wykop');
-const w = new (await Wykop).default({ /*config*/ });
-```
-
-#### ES Module
-```javascript
-import Wykop from 'wykop';
+const Wykop = require('wykop');
 const w = new Wykop({ /*config*/ });
 ```
-Then everything works the same way after that, below are some examples.
 
 ### Examples
 Here we use our token to get the list of upvotes from the newest post currently on the homepage:
