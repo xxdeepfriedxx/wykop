@@ -3,14 +3,13 @@
   "version": "1.0.6",
   "description": "Wrapper for the new Wykop API v3 written in NodeJS",
   "homepage": "https://github.com/xxdeepfriedxx/wykop",
-  "license" : "SEE LICENSE IN LICENSE",
+  "license": "SEE LICENSE IN LICENSE",
   "main": "wykop.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "xxdeepfriedxx",
   "dependencies": {
-    "axios": "^0.27.2",
-    "proxymise": "^1.0.2"
+    "axios": "^0.27.2"
   }
 }

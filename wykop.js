@@ -1,5 +1,5 @@
 const assert = require('assert');
-const proxymise = require('proxymise');
+const proxymise = require('./lib/proxymise.js')
 const FormData = require('form-data');
  
 const API = require('./lib/wykop-api.js');
@@ -33,7 +33,10 @@ module.exports = class Wykop extends API {
 		const core = new Core({ appkey: appkey, secret: secret, token: token, rtoken: rtoken, environment: environment, debug: debug });
 		super(core); this.#core = core; this.#instance = core.instance; this.#errors = core.errors; this.#database = core.database
 
-		return proxies ? proxymise(this) : this
+		if (proxies && typeof Proxy !== 'undefined') {
+			return proxymise(this)
+		}
+		return this
 	}
 
 	// === Objects
@@ -99,7 +102,7 @@ module.exports = class Wykop extends API {
 	}
 
 	submitEntry = async function({ content = null, photo = null, embed = null, survey = null, adult = false } = {}) {
-		return this.wrapContent('entry', await this.#instance.post('/entries', {
+		return this.wrapContent('entry', this.#instance.post('/entries', {
 			data: {
 				content: content,
 				photo: photo,
@@ -124,7 +127,7 @@ module.exports = class Wykop extends API {
 		assert(question, this.#errors.assert.notSpecified('question'));
 		assert(answers, this.#errors.assert.notSpecified('answers'));
 
-		return await this.#instance.post('/entries/survey', {
+		return this.#instance.post('/entries/survey', {
 			data: {
 				question: question,
 				answers: answers
@@ -138,7 +141,7 @@ module.exports = class Wykop extends API {
 
 	createEmbed = async function(url) {
 		assert(url, this.#errors.assert.notSpecified('url'));
-		return await this.#instance.post('/media/embed', {
+		return this.#instance.post('/media/embed', {
 			data: {
 				url: url
 			}
@@ -149,7 +152,7 @@ module.exports = class Wykop extends API {
 		assert(['settings', 'comments', 'links'].includes(type), this.#errors.assert.invalidValue('type', '"settings", "comments" (also used for entries), "links"'));
 		assert(url, this.#errors.assert.notSpecified('url'));
 		
-		return await this.#instance.post('/media/photos', {
+		return this.#instance.post('/media/photos', {
 			data: {
 				url: url
 			}
@@ -166,7 +169,7 @@ module.exports = class Wykop extends API {
 
 		const form = new FormData();
 		form.append('file', file, fileName ?? 'image');
-		return await this.#instance.post('/media/photos/upload', form, {
+		return this.#instance.post('/media/photos/upload', form, {
 			params: {
 				type: type,
 			}
@@ -183,7 +186,7 @@ module.exports = class Wykop extends API {
 
 	createURLDraft = async function(url) {
 		assert(url, this.#errors.assert.notSpecified('url'));
-		return this.wrapContent('draft', await this.#instance.post('/links/draft', {
+		return this.wrapContent('draft', this.#instance.post('/links/draft', {
 			data: {
 				url: url
 			}
@@ -198,7 +201,7 @@ module.exports = class Wykop extends API {
 		assert(title, this.#errors.assert.notSpecified('title'));
 		assert(content, this.#errors.assert.notSpecified('content'));
 		assert(html, this.#errors.assert.notSpecified('html'));
-		return this.wrapContent('draft', await this.#instance.post('/articles', {
+		return this.wrapContent('draft', this.#instance.post('/articles', {
 			data: {
 				title: title,
 				content: `{"time":1112470620000,"blocks":[{"type":"paragraph","data":{"text":"${content}"}}],"version":"21.3.7"}`,
@@ -232,7 +235,7 @@ module.exports = class Wykop extends API {
 	}
 
 	getMeShort = async function() {
-		return this.wrapContent('profile', await this.#instance.get('/profile/short'));
+		return this.wrapContent('profile', this.#instance.get('/profile/short'));
 	}
 
 	getBadge = async function(slug) {
@@ -242,7 +245,7 @@ module.exports = class Wykop extends API {
 	// Get links that are on the homepage or in upcomming
 	#getLinks = async function({ type = null, sort = null, category = null, bucket = null, page = null } = {}) {
 		assert(['homepage', 'upcomming', null].includes(type), this.#errors.assert.invalidValue('type', 'homepage, upcomming'))
-		return this.wrapListingMixed(await this.#instance.get('/links', {
+		return this.wrapListingMixed(this.#instance.get('/links', {
 			params: {
 				type: type,
 				sort: sort,
@@ -279,7 +282,7 @@ module.exports = class Wykop extends API {
 
 	// Get the number of links currently in the 'upcoming' section
 	getUpcommingCount = async function({ category = null, bucket = null } = {}) {
-		return this.wrapContent('none', await this.#instance.get('/links/stats/upcoming', { 
+		return this.wrapContent('none', this.#instance.get('/links/stats/upcoming', { 
 			params: {
 				category: category,
 				bucket: bucket
@@ -290,7 +293,7 @@ module.exports = class Wykop extends API {
 	// Get a link based on an URL
 	getLinkByURL = async function(url) {
 		assert(url, this.#errors.assert.notSpecified('url'));
-		return this.wrapContent('link', await this.#instance.get('/links/url', {
+		return this.wrapContent('link', this.#instance.get('/links/url', {
 			params: {
 				url: url
 			}
@@ -299,7 +302,7 @@ module.exports = class Wykop extends API {
 
 	getHits = async function({ year = null, month = null, sort = null } = {}) {
 		assert(['all', 'day', 'week', 'month', 'year', null].includes(sort), this.#errors.assert.invalidValue('sort', 'all, day, week, month, year'));
-		return this.wrapListingMixed(await this.#instance.get("/hits/links", {
+		return this.wrapListingMixed(this.#instance.get("/hits/links", {
 			params: {
 				year: year,
 				month: month,
@@ -312,7 +315,7 @@ module.exports = class Wykop extends API {
 		assert(['newest', 'active', 'hot', null].includes(sort), this.#errors.assert.invalidValue('sort', 'newest, active, hot'));
 		assert(['1', 1, '2', 2, '3', 3, '6', 6, '12', 12, '24', 24, null].includes(lastUpdate), this.#errors.assert.invalidValue('lastUpdate', '1, 2, 3, 6, 12, 24'));
 		
-		return this.wrapListing('entry', await this.#instance.get('/entries', {
+		return this.wrapListing('entry', this.#instance.get('/entries', {
 			params: {
 				sort: sort,
 				last_update: lastUpdate,
@@ -330,7 +333,7 @@ module.exports = class Wykop extends API {
 	getFavoriteContent = async function({ sort = null, type = null, page = null } = {}) {
 		assert(['newest', 'oldest', null].includes(sort), this.#errors.assert.invalidValue('sort', 'newest, oldest'));
 		assert(['link', 'entry', 'link_comment', 'entry_comment', null].includes(type), this.#errors.assert.invalidValue('type', 'link, entry, link_comment, entry_comment'));
-		return this.wrapListingMixed(await this.#instance.get('/favourites', {
+		return this.wrapListingMixed(this.#instance.get('/favourites', {
 			data: {
 				sort: sort,
 				resource: type,
@@ -340,7 +343,7 @@ module.exports = class Wykop extends API {
 	}
 
 	getObservedContent = async function({ page = null } = {}) {
-		return this.wrapListingMixed(await this.#instance.get('/observed/all', {
+		return this.wrapListingMixed(this.#instance.get('/observed/all', {
 			params: {
 				page: page
 			}
@@ -348,7 +351,7 @@ module.exports = class Wykop extends API {
 	}
 
 	getObservedUsersContent = async function({ page = null } = {}) {
-		return this.wrapListingMixed(await this.#instance.get('/observed/users', {
+		return this.wrapListingMixed(this.#instance.get('/observed/users', {
 			params: {
 				page: page
 			}
@@ -358,7 +361,7 @@ module.exports = class Wykop extends API {
 	// date should be formatted “yyyy-MM-dd HH:mm:ss”
 	getNewerObservedUsersContentCount = async function({ date = null, lastId = null } = {}) {
 		assert(date || lastId, this.#errors.assert.notSpecified('date or lastId'));
-		return this.wrapListingMixed(await this.#instance.get('/observed/users/newer', {
+		return this.wrapListingMixed(this.#instance.get('/observed/users/newer', {
 			data: {
 				date: date,
 				lastId: lastId
@@ -367,7 +370,7 @@ module.exports = class Wykop extends API {
 	}
 
 	getObservedTagsContent = async function({ page = null } = {}) {
-		return this.wrapListingMixed(await this.#instance.get('/observed/tags/stream', {
+		return this.wrapListingMixed(this.#instance.get('/observed/tags/stream', {
 			params: {
 				page: page
 			}
@@ -376,7 +379,7 @@ module.exports = class Wykop extends API {
 
 	getAutocompleteSuggestionsForTag = async function(query) {
 		assert(query, this.#errors.assert.notSpecified('query'));
-		return this.wrapListing('tag', await this.#instance.get('/tags/autocomplete', {
+		return this.wrapListing('tag', this.#instance.get('/tags/autocomplete', {
 			params: {
 				query: query
 			}
@@ -384,7 +387,7 @@ module.exports = class Wykop extends API {
 	}
 
 	getAutocompleteSuggestionsForUser = async function(query) {
-		return this.wrapListing('profile', await this.#instance.get('/users/autocomplete', {
+		return this.wrapListing('profile', this.#instance.get('/users/autocomplete', {
 			params: {
 				query: query
 			}
@@ -392,11 +395,11 @@ module.exports = class Wykop extends API {
 	}
 
 	getPopularTags = async function() {
-		return this.wrapListing('tag', await this.#instance.get('/tags/popular'));
+		return this.wrapListing('tag', this.#instance.get('/tags/popular'));
 	}
 
 	getPopularAuthoredTags = async function() {
-		return this.wrapListing('tag', await this.#instance.get('/tags/popular-user-tags'));
+		return this.wrapListing('tag', this.#instance.get('/tags/popular-user-tags'));
 	}
 
 	// === Search ===
@@ -428,7 +431,7 @@ module.exports = class Wykop extends API {
 		}
 
 		if (type === 'all') {
-			return await this.#instance.get('/search/' + type + (stringParams.length ? `?${stringParams}` : ''), { 
+			return this.#instance.get('/search/' + type + (stringParams.length ? `?${stringParams}` : ''), { 
 				params: params
 			}).then(async res => {
 				res = res.data
@@ -439,18 +442,18 @@ module.exports = class Wykop extends API {
 			})
 		}
 
-		return this.wrapListing(type, await this.#instance.get('/search/' + type + (stringParams.length ? `?${stringParams}` : ''), { 
+		return this.wrapListing(type, this.#instance.get('/search/' + type + (stringParams.length ? `?${stringParams}` : ''), { 
 			params: params
 		}));
 	}
 
 	// === Notifications ===
 	getNotificationStatus = async function() {
-		return this.wrapContent('none', await this.#instance.get('/notifications/status'));
+		return this.wrapContent('none', this.#instance.get('/notifications/status'));
 	}
 
     getPersonalNotifications = async function({ page } = {}) {
-		return this.wrapListing('notification_personal', await this.#instance.get('/notifications/entries', {
+		return this.wrapListing('notification_personal', this.#instance.get('/notifications/entries', {
 			params: {
 				page: page
 			}
@@ -458,15 +461,15 @@ module.exports = class Wykop extends API {
 	}
 
 	markPersonalNotificationsAsRead = async function() {
-		return await this.#instance.put('/notifications/entries/all');
+		return this.#instance.put('/notifications/entries/all');
 	}
 
 	removePersonalNotifications = async function() {
-		return await this.#instance.delete('/notifications/entries/all');
+		return this.#instance.delete('/notifications/entries/all');
 	}
 
     getTagNotifications = async function({ page } = {}) {
-		return this.wrapListing('notification_tag', await this.#instance.get('/notifications/tags', {
+		return this.wrapListing('notification_tag', this.#instance.get('/notifications/tags', {
 			params: {
 				page: page
 			}
@@ -474,15 +477,15 @@ module.exports = class Wykop extends API {
 	}
 
 	markTagNotificationsAsRead = async function() {
-		return await this.#instance.put('/notifications/tags/all');
+		return this.#instance.put('/notifications/tags/all');
 	}
 
 	removeTagNotifications = async function() {
-		return await this.#instance.delete('/notifications/tags/all');
+		return this.#instance.delete('/notifications/tags/all');
 	}
 
-    getPMNotifications = async function({ page } = {}) {
-		return this.wrapListing('notification_pm', await this.#instance.get('/notifications/pm', {
+	getPMNotifications = async function({ page } = {}) {
+		return this.wrapListing('notification_pm', this.#instance.get('/notifications/pm', {
 			params: {
 				page: page
 			}
@@ -490,23 +493,23 @@ module.exports = class Wykop extends API {
 	}
 
 	markPmNotificationsAsRead = async function() {
-		return await this.#instance.put('/notifications/pm/all');
+		return this.#instance.put('/notifications/pm/all');
 	}
 
 	removePmNotifications = async function() {
-		return await this.#instance.delete('/notifications/pm/all');
+		return this.#instance.delete('/notifications/pm/all');
 	}
 
-    getOpenConversation = async function() {
-		return new Conversation(this.#core, { user: { username: await await this.#instance.get('/pm/open').then(res => res.data) }}).get();
+	getOpenConversation = async function() {
+		return new Conversation(this.#core, { user: { username: await this.#instance.get('/pm/open').then(res => res.data) }}).get();
 	}
 
 	markAllConversationsAsRead = async function() {
-		return await this.#instance.put('/pm/read-all');
+		return this.#instance.put('/pm/read-all');
 	}
 
 	getConversations = async function({ query = null } = {}) {
-		return this.wrapListing('conversation', await this.#instance.get('/pm/conversations', {
+		return this.wrapListing('conversation', this.#instance.get('/pm/conversations', {
 			params: {
 				query: query
 			}
@@ -515,21 +518,21 @@ module.exports = class Wykop extends API {
 
 	// === Categories ===
 	getCategories = async function() {
-		return this.wrapListing('none', await this.#instance.get('/categories'));
+		return this.wrapListing('none', this.#instance.get('/categories'));
 	}
 
 	getUserCategories = async function() {
-		return this.wrapListing('bucket', await this.#instance.get('/buckets'));
+		return this.wrapListing('bucket', this.#instance.get('/buckets'));
 	}
 
 	getUserCategoryStatus = async function() {
-		return await this.#instance.get('/buckets/status');
+		return this.#instance.get('/buckets/status');
 	}
 
 	addUserCategory = async function({ title = null, query = null } = {}) {
 		assert(title, this.#errors.assert.notSpecified('title'));
 		assert(query, this.#errors.assert.notSpecified('query'));
-		return this.wrapContent('bucket', await this.#instance.post('/buckets', {
+		return this.wrapContent('bucket', this.#instance.post('/buckets', {
 			data: {
 				title: title,
 				query: query
@@ -539,7 +542,7 @@ module.exports = class Wykop extends API {
 
 	getUserCategoryContentPreview = async function(query) {
 		assert(query, this.#errors.assert.notSpecified('query'));
-		return this.wrapListingMixed(await this.#instance.get('/buckets/search', {
+		return this.wrapListingMixed(this.#instance.get('/buckets/search', {
 			data: {
 				query: query
 			}
@@ -547,11 +550,11 @@ module.exports = class Wykop extends API {
 	}
 
 	getBadges = async function() {
-		return this.wrapListing('badge', await this.#instance.get('/badges').then(res => res.data.flat())); 
+		return this.wrapListing('badge', this.#instance.get('/badges').then(res => res.data.flat())); 
 	}
 
 	getRanking = async function({ page = null } = {}) {
-		return this.wrapListing('profile', await this.#instance.get('/rank', {
+		return this.wrapListing('profile', this.#instance.get('/rank', {
 			params: {
 				page: page
 			}
@@ -580,7 +583,7 @@ module.exports = class Wykop extends API {
 			request.data.captcha = captcha;
 		}
 
-		return this.wrapContent('none', await this.#instance.post('/login', request)).then(res => {
+		return this.wrapContent('none', this.#instance.post('/login', request)).then(res => {
 			if (!res.refresh_token) { 
 				res.info = 'This means the user has 2FA turned on, call w.submit2FACode with this token and 2FA code'
 				return res 
@@ -592,13 +595,13 @@ module.exports = class Wykop extends API {
 	logout = async function() {
 		this.#core.clearRefreshToken();
 		
-		return await this.#instance.get('/logout').finally(_ => {
+		return this.#instance.get('/logout').finally(_ => {
 			this.#core.clearTokens()
 		});
 	}
 
 	submit2FACode = async function({ token, code } = {}) {
-		return this.wrapContent('none', await this.#instance.post('/2fa/' + token, {
+		return this.wrapContent('none', this.#instance.post('/2fa/' + token, {
 			data: {
 				code: code
 			}
@@ -608,7 +611,7 @@ module.exports = class Wykop extends API {
 	}
 
 	submit2FARecoveryCode = async function({ token, code } = {}) {
-		return this.wrapContent('none', await this.#instance.post('/2fa/' + token + '/recover', {
+		return this.wrapContent('none', this.#instance.post('/2fa/' + token + '/recover', {
 			data: {
 				code: code
 			}
@@ -618,7 +621,7 @@ module.exports = class Wykop extends API {
 	}
 
 	requestPasswordReset = async function(email) {
-		return this.wrapContent('none', await this.#instance.post('/password', {
+		return this.wrapContent('none', this.#instance.post('/password', {
 			data: {
 				email: email
 			}
@@ -626,7 +629,7 @@ module.exports = class Wykop extends API {
 	}
 
 	submitPasswordReset = async function({ token, password } = {}) {
-		return this.wrapContent('none', await this.#instance.post('/password/' + token, {
+		return this.wrapContent('none', this.#instance.post('/password/' + token, {
 			data: {
 				password: password,
 				password_confirmation: password
@@ -640,7 +643,7 @@ module.exports = class Wykop extends API {
 		assert(email, this.#errors.assert.notSpecified('email'));
 		assert(password, this.#errors.assert.notSpecified('password'));
 		assert(phone, this.#errors.assert.notSpecified('phone'));
-		return this.wrapContent('none', await this.#instance.post('/users', {
+		return this.wrapContent('none', this.#instance.post('/users', {
 			data: {
 				username: username,
 				email: email,
@@ -653,13 +656,13 @@ module.exports = class Wykop extends API {
 
 	rerequestRegistrationSMS = async function({ hash = null } = {}) {
 		assert(hash, this.#errors.assert.notSpecified('hash'));
-		return await this.#instance.get('/users/resend/' + hash);
+		return this.#instance.get('/users/resend/' + hash);
 	}
 
 	submitRegistrationSMS = async function({ hash = null, code = null } = {}) {
 		assert(hash, this.#errors.assert.notSpecified('hash'));
 		assert(code, this.#errors.assert.notSpecified('code'));
-		return await this.#instance.post('/users/sms/' + hash, {
+		return this.#instance.post('/users/sms/' + hash, {
 			data: {
 				code: code
 			}
@@ -668,14 +671,14 @@ module.exports = class Wykop extends API {
 
 	submitRegistrationEmailToken = async function({ token = null } = {}) {
 		assert(token, this.#errors.assert.notSpecified('token'));
-		return await this.#instance.post('/users/confirmation/' + token).then(res => {
+		return this.#instance.post('/users/confirmation/' + token).then(res => {
 			return this.#core.saveTokens(res.data.token, res.data.refresh_token);
 		})
 	}
 
 	// === Wykop Connect ===
 	getWykopConnectURL = async function() {
-		return this.wrapContent('none', await this.#instance.get('/connect')).then(res => {
+		return this.wrapContent('none', this.#instance.get('/connect')).then(res => {
 			res.token = res.connect_url.split('/').pop()
 			return res
 		});
@@ -684,12 +687,12 @@ module.exports = class Wykop extends API {
 	// Doesn't seem to work?
 	getWykopConnectStatus = async function(token) {
 		assert(token, this.#errors.assert.notSpecified('token'));
-		return this.wrapContent('none', await this.#instance.get('/connect/' + token))
+		return this.wrapContent('none', this.#instance.get('/connect/' + token))
 	}
 
 	acceptWykopConnectPermissions = async function(token, { send_message = false, read_profile = false, add_comment = false, add_link = false, add_entry = false, add_vote = false } = {}) {
 		assert(token, this.#errors.assert.notSpecified('token'));
-		return this.wrapContent('none', await this.#instance.put('/connect/' + token, {
+		return this.wrapContent('none', this.#instance.put('/connect/' + token, {
 			data: {
 				send_message: send_message,
 				read_profile: read_profile,
@@ -710,20 +713,20 @@ module.exports = class Wykop extends API {
 	// === Authorize ===
 	// Get a list of account blockades - what kind of blokades?
 	getAccountBlockades = async function() {
-		return await this.#instance.get('/security/authorize')
+		return this.#instance.get('/security/authorize')
 	}
 
 	requestAccountBlockadeSMS = async function() {
-		return await this.#instance.post('/security/authorize/sms/send')
+		return this.#instance.post('/security/authorize/sms/send')
 	}
 
 	rerequestAccountBlockadeSMS = async function() {
-		return await this.#instance.get('/security/authorize/sms/resend')
+		return this.#instance.get('/security/authorize/sms/resend')
 	}
 
 	submitAccountBlockadeSMS = async function(code) {
 		assert(code, this.#errors.assert.notSpecified('code'));
-		return await this.#instance.post('/security/authorize/sms', {
+		return this.#instance.post('/security/authorize/sms', {
 			data: {
 				code: code
 			}
@@ -732,7 +735,7 @@ module.exports = class Wykop extends API {
 
 	submitAccountBlockadeCaptcha = async function(code) {
 		assert(code, this.#errors.assert.notSpecified('code'));
-		return await this.#instance.post('/security/authorize/recaptcha', {
+		return this.#instance.post('/security/authorize/recaptcha', {
 			data: {
 				code: code
 			}
@@ -740,7 +743,7 @@ module.exports = class Wykop extends API {
 	}
 
 	acceptTermsAndConditions = async function() {
-		return await this.#instance.post('/security/authorize/statute');
+		return this.#instance.post('/security/authorize/statute');
 	}
 
 	// === Settings === 
@@ -760,16 +763,16 @@ module.exports = class Wykop extends API {
 	}
 
 	getPhone = async function() {
-		return this.wrapContent('none', await this.#instance.get('/settings/phone')).then(res => res.phone);
+		return this.wrapContent('none', this.#instance.get('/settings/phone')).then(res => res.phone);
 	}
 
 	getEmail = async function() {
-		return this.wrapContent('none', await this.#instance.get('/settings/email')).then(res => res.email);
+		return this.wrapContent('none', this.#instance.get('/settings/email')).then(res => res.email);
 	}
 
 	requestChangePhoneNumber = async function(phone) {
 		assert(phone, this.#errors.assert.notSpecified('phone'));
-		return await this.#instance.put('/settings/changephone', {
+		return this.#instance.put('/settings/changephone', {
 			data: {
 				phone: phone
 			}
@@ -778,7 +781,7 @@ module.exports = class Wykop extends API {
 
 	submitChangePhoneNumberSMS = async function(code) {
 		assert(code, this.#errors.assert.notSpecified('code'));
-		return await this.#instance.post('/settings/changephone', {
+		return this.#instance.post('/settings/changephone', {
 			data: {
 				code: code
 			}
@@ -787,12 +790,12 @@ module.exports = class Wykop extends API {
 
 	// === Config ===
 	getAccountColorHexes = async function() {
-		return this.wrapListing('none', await this.#instance.get('/config/colors'));
+		return this.wrapListing('none', this.#instance.get('/config/colors'));
 	}
 
 	getAccountColorHex = async function(name) {
 		assert(name, this.#errors.assert.notSpecified('name'));
-		return this.wrapContent('none', await this.#instance.get('/config/colors/' + name));
+		return this.wrapContent('none', this.#instance.get('/config/colors/' + name));
 	}
 
 	// === Contact ===
@@ -830,16 +833,16 @@ module.exports = class Wykop extends API {
 		if (file) {
 			let form = new FormData();
 			form.append('file', file, 'image');
-			return await this.#instance.post('/contact/support', form, requestData);
+			return this.#instance.post('/contact/support', form, requestData);
 		}
 
-		return await this.#instance.post('/contact/support', requestData);
+		return this.#instance.post('/contact/support', requestData);
 	}
 
 	submitGDPRMessage = async function({ email = null, message = null } = {}) {
 		assert(email, this.#errors.assert.notSpecified('email'));
 		assert(message, this.#errors.assert.notSpecified('message'));
-		return await this.#instance.post('/contact/gdpr', {
+		return this.#instance.post('/contact/gdpr', {
 			data: {
 				email: email,
 				message: message
@@ -849,7 +852,7 @@ module.exports = class Wykop extends API {
 
 	// === Moderation ===
 	getReportedContent = async function({ page = null } = {}) {
-        return this.wrapListing('none', await this.#instance.get('/reports/reports', {
+        return this.wrapListing('none', this.#instance.get('/reports/reports', {
         	params: {
         		page: page
         	}
@@ -866,13 +869,13 @@ module.exports = class Wykop extends API {
         if (linkCommentId)    { data = { type: 'link_comment',  id: linkCommentId,   parent_id: linkId 	}}
         if (relatedId)  	  { data = { type: 'link_related',  id: relatedId, 	   	 parent_id: linkId 	}}
 
-		return this.wrapContent('none', await this.#instance.post('reports/reports', {
+		return this.wrapContent('none', this.#instance.post('reports/reports', {
 			data: data
 		})).then(res => res.url);
 	}
 
 	getModeratedContent = async function({ page = null } = {}) {
-        return this.wrapListing('none', await this.#instance.get('/reports/moderated', {
+        return this.wrapListing('none', this.#instance.get('/reports/moderated', {
         	params: {
         		page: page
         	}
@@ -882,7 +885,7 @@ module.exports = class Wykop extends API {
 	submitAppeal = async function({ reportId = null, content = null } = {}) {
 		assert(reportId, this.#errors.assert.notSpecified('reportId'));
 		assert(content, this.#errors.assert.notSpecified('content'));
-		return await this.#instance.post('/reports/moderated/' + reportId + '/appeal', {
+		return this.#instance.post('/reports/moderated/' + reportId + '/appeal', {
 			data: {
 				content: content
 			}
@@ -890,7 +893,7 @@ module.exports = class Wykop extends API {
 	}
 
 	getAppeals = async function({ page = null } = {}) {
-        return this.wrapListing('none', await this.#instance.get('/reports/appeals', {
+        return this.wrapListing('none', this.#instance.get('/reports/appeals', {
         	params: {
         		page: page
         	}
