@@ -67,7 +67,7 @@ module.exports = class Wykop extends API {
 		return new Article(this.#core, { id: id })
 	}
 
-	draft = async function(id) {
+	draft = async function(key) {
 		assert(key, this.#errors.assert.notSpecified('key'));
 		return new Draft(this.#core, { key: key })
 	}
@@ -94,11 +94,11 @@ module.exports = class Wykop extends API {
 
 	// === Content ===
 	getEntry = async function(id) {
-		return this.entry(id).get();
+		return this.entry(id).then(x => x.get());
 	}
 
 	getEntryComment = async function({ id, entryId } = {}) {
-		return this.entryComment({ id: id, entryId: entryId });
+		return this.entryComment({ id: id, entryId: entryId }).then(x => x.get());
 	}
 
 	submitEntry = async function({ content = null, photo = null, embed = null, survey = null, adult = false } = {}) {
@@ -177,11 +177,11 @@ module.exports = class Wykop extends API {
 	}
 
 	getLink = async function(id) {
-		return this.link(id).get();
+		return this.link(id).then(x => x.get());
 	}
 
 	getLinkComment = async function({ id, linkId } = {}) {
-		return this.linkComment({ id: id, linkId: linkId }).get();
+		return this.linkComment({ id: id, linkId: linkId }).then(x => x.get());
 	}
 
 	createURLDraft = async function(url) {
@@ -194,7 +194,7 @@ module.exports = class Wykop extends API {
 	}
 
 	getArticle = async function(id) {
-		this.article(id).get();
+		this.article(id).then(x => x.get());
 	}
 
 	createArticleDraft = async function({ title = null, content = null, html = null } = {}) {
@@ -211,27 +211,31 @@ module.exports = class Wykop extends API {
 	}
 
 	getDraft = async function(key) {
-		this.draft(key).get()
+		return this.draft(key).then(x => x.get());
 	}
 
     getConversation = async function(username) {
-		this.conversation(username).get()
+		return this.conversation(username).then(x => x.get());
     }
 
     getTag = async function(tag, config) {
-		this.tag(tag).get()
+		return this.tag(tag).then(x => x.get());
     }
 
     getTagContent = async function(tag, config) {
-		this.tag(tag).getContent(config)
+		return this.tag(tag).then(x => x.getContent(config))
     }
 
 	getProfile = async function(username) {
-		return this.profile(username).get();
+		return this.profile(username).then(x => x.get());
 	}
 
 	getMe = async function() {
-		return this.getProfile(await this.getLoggedUsername());
+		return new Promise(async (resolve, reject) => {
+			const username = await this.getLoggedUsername()
+		 	if (username === null) { return reject('User not logged in') }
+			return resolve(this.getProfile(username))
+		});
 	}
 
 	getMeShort = async function() {
@@ -239,7 +243,7 @@ module.exports = class Wykop extends API {
 	}
 
 	getBadge = async function(slug) {
-		this.badge(slug).get();
+		return this.badge(slug).then(x => x.get());
 	}
 
 	// Get links that are on the homepage or in upcomming
