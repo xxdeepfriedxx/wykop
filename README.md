@@ -36,10 +36,10 @@ const activity = await w.getProfile(upvotes.items[0].user.username).getActions()
 ```
 Here's the full code of the simple example above in CommonJS:
 ```javascript
-const Wykop = import('wykop');
+const Wykop = require('wykop');
 
 (async () => {
-    const w = new (await Wykop).default({
+    const w = new Wykop({
         token: '<your-token>'
     });
 
