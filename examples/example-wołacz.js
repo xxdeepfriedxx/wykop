@@ -25,7 +25,7 @@ const upvoterLists = [
 
 		// get the upvoters and append them to our 'users' list
 		const upvoters = await w.entry(entryId).getUpvoters()
-		users = [...upvoters.items.map(x => '@' + x.username)]
+		users = users.concat(upvoters.items.map(x => '@' + x.username))
 	}
 
 	// remove duplicate users in our list
