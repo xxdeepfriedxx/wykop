@@ -233,7 +233,11 @@ w.getLinkByURL('https://wykop.pl')
 ```
 ```javascript
 w.getHits({ sort: 'all', year: null, month: null })
-// returns a Promise that resolves to an object, where object.items is a list of Link and Entry objects
+// returns a Promise that resolves to an object, where object.items is a list of Link objects
+```
+```javascript
+w.getEntryHits({ sort: 'all', year: null, month: null })
+// returns a Promise that resolves to an object, where object.items is a list of Entry objects
 ```
 ```javascript
 w.getMicroblog({ sort: 'hot', lastUpdate: '12', category: null, bucket: '3hbh2jg3b', page: '10' })

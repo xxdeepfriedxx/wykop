@@ -306,7 +306,18 @@ module.exports = class Wykop extends API {
 
 	getHits = async function({ year = null, month = null, sort = null } = {}) {
 		assert(['all', 'day', 'week', 'month', 'year', null].includes(sort), this.#errors.assert.invalidValue('sort', 'all, day, week, month, year'));
-		return this.wrapListingMixed(this.#instance.get("/hits/links", {
+		return this.wrapListingMixed(this.#instance.get('/hits/links', {
+			params: {
+				year: year,
+				month: month,
+				sort: sort
+			}
+		}));
+	}
+
+	getEntryHits = async function({ year = null, month = null, sort = null } = {}) {
+		assert(['all', 'day', 'week', 'month', 'year', null].includes(sort), this.#errors.assert.invalidValue('sort', 'all, day, week, month, year'));
+		return this.wrapListingMixed(this.#instance.get('/hits/entries', {
 			params: {
 				year: year,
 				month: month,
