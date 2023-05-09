@@ -200,11 +200,10 @@ module.exports = class Wykop extends API {
 	createArticleDraft = async function({ title = null, content = null, html = null } = {}) {
 		assert(title, this.#errors.assert.notSpecified('title'));
 		assert(content, this.#errors.assert.notSpecified('content'));
-		assert(html, this.#errors.assert.notSpecified('html'));
 		return this.wrapContent('draft', this.#instance.post('/articles', {
 			data: {
 				title: title,
-				content: `{"time":1112470620000,"blocks":[{"type":"paragraph","data":{"text":"${content}"}}],"version":"21.3.7"}`,
+				content: content,
 				content_html: html
 			}
 		}));
@@ -233,7 +232,7 @@ module.exports = class Wykop extends API {
 	getMe = async function() {
 		return new Promise(async (resolve, reject) => {
 			const username = await this.getLoggedUsername()
-		 	if (username === null) { return reject('User not logged in') }
+			if (username === null) { return reject(null) }
 			return resolve(this.getProfile(username))
 		});
 	}
