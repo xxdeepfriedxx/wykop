@@ -180,7 +180,12 @@ w.getArticle('1234')
 // returns a Promise that resolves to an Article object
 ```
 ```javascript
-w.createArticleDraft({ title: 'Hello world!', content: 'And again', html: 'Anything random, don't think this is used })
+w.createArticleDraft({ 
+    title: 'Hello world!', 
+    // The format used for the 'content' seems to be https://editorjs.io
+    content: '{"time":1112470620000,"blocks":[{"type":"paragraph","data":{"text":"This is an example that just shows a string"}}],"version":"21.3.7"}', 
+    html: "Anything random, don't think this is used" 
+})
 // returns a Promise that resolves to a Draft object
 ```
 ```javascript
@@ -192,11 +197,11 @@ w.getConversation('wykop')
 // returns a Promise that resolves to a Conversation object
 ```
 ```javascript
-getTag = function(tag, config) {
+w.getTag = function(tag, config) {
 // returns a Promise that resolves to a Tag object
 ```
 ```javascript
-getTagContent = function(tag, config) {
+w.getTagContent = function(tag, config) {
 // returns a Promise that resolves to a object, where object.items is a list of Entry and Link objects
 ```
 ```javascript
@@ -280,7 +285,7 @@ w.getPopularAuthoredTags()
 // returns a Promise that resolves to an object, where object.items is a list of Tag objects
 ```
 ```javascript
-w.getSearchContent('wykop api', { type: 'all', sort: null, votes: null, dateFrom: w.formatDate(new Date), dateTo: null, tags: null, users: null, category: null, bucket: null, page: null })
+w.getSearchContent('wykop api', { type: 'all', sort: null, votes: null, dateFrom: w.formatDate(new Date), dateTo: null, tags: null, users: null, category: null, bucket: null, domains: null, page: null })
 // type === 'all' -> returns an object, where object.links.items is a list of Link objects, object.entries.items is a list of Entry objects and object.users.items is a list of Profile objects
 // type !== 'all' -> returns an object, where object.items is a list of either Link, Entry or Profile objects
 ```
