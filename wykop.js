@@ -421,8 +421,8 @@ module.exports = class Wykop extends API {
 		assert(['all', 'links', 'entries', 'users'].includes(type), this.#errors.assert.invalidValue('type', ['all', 'links', 'entries', 'users']))
 		assert([null, 'score', 'popular', 'comments', 'newest'].includes(sort), this.#errors.assert.invalidValue('sort', ['score', 'popular', 'comments', 'newest']))
 		assert([null, '50', '100', '500', '1000', 50, 100, 500, 1000].includes(votes), this.#errors.assert.invalidValue('votes', '50, 100, 500, 1000'))
-		assert(tags === null || Array.isArray(tags) && tags.every(tag => typeof tag === 'string'), this.#errors.assert.invalidType('domains', 'null | string[]'))
-		assert(users === null || Array.isArray(users) && users.every(user => typeof user === 'string'), this.#errors.assert.invalidType('domains', 'null | string[]'))
+		assert(tags === null || Array.isArray(tags) && tags.every(tag => typeof tag === 'string'), this.#errors.assert.invalidType('tags', 'null | string[]'))
+		assert(users === null || Array.isArray(users) && users.every(user => typeof user === 'string'), this.#errors.assert.invalidType('users', 'null | string[]'))
 		assert(domains === null || Array.isArray(domains) && domains.every(domain => typeof domain === 'string'), this.#errors.assert.invalidType('domains', 'null | string[]'))
 
 		let params = {};
