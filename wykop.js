@@ -417,10 +417,11 @@ module.exports = class Wykop extends API {
 	}
 
 	// === Search ===
-	getSearchContent = async function(query, { type = 'all', sort = null, votes = null, dateFrom = null, dateTo = null, tags = null, users = null, category = null, bucket = null, page = null } = {}) {
+	getSearchContent = async function(query, { type = 'all', sort = null, votes = null, dateFrom = null, dateTo = null, tags = null, users = null, category = null, bucket = null, domains = null, page = null } = {}) {
 		assert(['all', 'links', 'entries', 'users'].includes(type), this.#errors.assert.invalidValue('type', ['all', 'links', 'entries', 'users']))
 		assert([null, 'score', 'popular', 'comments', 'newest'].includes(sort), this.#errors.assert.invalidValue('sort', ['score', 'popular', 'comments', 'newest']))
 		assert([null, '50', '100', '500', '1000', 50, 100, 500, 1000].includes(votes), this.#errors.assert.invalidValue('votes', '50, 100, 500, 1000'))
+		assert(domains === null || Array.isArray(domains) && domains.every(domain => typeof domain === 'string'), this.#errors.assert.invalidType('domains', 'null | string[]'))
 
 		let params = {};
 		if (query) { params.query = query }
@@ -430,6 +431,7 @@ module.exports = class Wykop extends API {
 		if (users) { params.users = users }
 		if (category) { params.category = category }
 		if (bucket) { params.bucket = bucket }
+		if (domains) { params.domains = domains }
 		if (page) { params.page = page }
 
 		let stringParams = '';
