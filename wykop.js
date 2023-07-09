@@ -194,7 +194,7 @@ module.exports = class Wykop extends API {
 	}
 
 	getArticle = async function(id) {
-		this.article(id).then(x => x.get());
+		return this.article(id).then(x => x.get());
 	}
 
 	createArticleDraft = async function({ title = null, content = null, html = null } = {}) {
