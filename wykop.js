@@ -246,7 +246,7 @@ module.exports = class Wykop extends API {
 	}
 
 	// Get links that are on the homepage or in upcomming
-	#getLinks = async function({ type = null, sort = null, category = null, bucket = null, page = null } = {}) {
+	#getLinks = async function({ type = null, sort = null, category = null, bucket = null, sidebar = false, page = null } = {}) {
 		assert(['homepage', 'upcomming', null].includes(type), this.#errors.assert.invalidValue('type', 'homepage, upcomming'))
 		return this.wrapListingMixed(this.#instance.get('/links', {
 			params: {
@@ -254,31 +254,34 @@ module.exports = class Wykop extends API {
 				sort: sort,
 				category: category,
 				bucket: bucket,
+				sidebar: sidebar,
 				page: page
 			}
 		}));
 	}
 
 	// Helper async function for getting homepage data from `getLinks()`
-	getHomepage = async function({ sort = null, category = null, bucket = null, page = null } = {}) {
-		assert(['newest', 'active', null].includes(sort), this.#errors.assert.invalidValue('sort', 'newest, active'));
+	getHomepage = async function({ sort = null, category = null, bucket = null, sidebar = false, page = null } = {}) {
+		assert(['newest', 'active', 'popular', null].includes(sort), this.#errors.assert.invalidValue('sort', 'newest, active'));
 		return this.#getLinks({
 			type: 'homepage',
 			sort: sort,
 			category: category,
 			bucket: bucket,
+			sidebar: sidebar,
 			page: page
 		});
 	}
 
 	// Helper async function for getting upcoming data from `getLinks()`
-	getUpcomming = async function({ sort = null, category = null, bucket = null, page = null } = {}) {
-		assert(['newest', 'active', 'commented', 'digged', null].includes(sort), this.#errors.assert.invalidValue('sort', 'newest, active, commented, digged'));
+	getUpcomming = async function({ sort = null, category = null, bucket = null, sidebar = false, page = null } = {}) {
+		assert(['newest', 'active', 'commented', 'digged', 'popular', null].includes(sort), this.#errors.assert.invalidValue('sort', 'newest, active, commented, digged'));
 		return this.#getLinks({
 			type: 'upcomming',
 			sort: sort,
 			category: category,
 			bucket: bucket,
+			sidebar: sidebar,
 			page: page
 		});
 	}
@@ -325,8 +328,8 @@ module.exports = class Wykop extends API {
 		}));
 	}
 
-	#getEntries = async function({ sort = 'hot', lastUpdate = '12', category = null, bucket = null, page = null } = {}) {
-		assert(['newest', 'active', 'hot', null].includes(sort), this.#errors.assert.invalidValue('sort', 'newest, active, hot'));
+	#getEntries = async function({ sort = 'hot', lastUpdate = '12', category = null, bucket = null, sidebar = false, page = null } = {}) {
+		assert(['newest', 'active', 'hot', 'popular', null].includes(sort), this.#errors.assert.invalidValue('sort', 'newest, active, hot'));
 		assert(['1', 1, '2', 2, '3', 3, '6', 6, '12', 12, '24', 24, null].includes(lastUpdate), this.#errors.assert.invalidValue('lastUpdate', '1, 2, 3, 6, 12, 24'));
 		
 		return this.wrapListing('entry', this.#instance.get('/entries', {
@@ -335,6 +338,7 @@ module.exports = class Wykop extends API {
 				last_update: lastUpdate,
 				category: category,
 				bucket: bucket,
+				sidebar: sidebar,
 				page: page
 			}
 		}));
