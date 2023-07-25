@@ -375,7 +375,7 @@ w.getMyRank()
 ```
 ```javascript
 w.login(username, password, { captcha: '3hbh2jg3b' })
-// returns a Promise that resolves to an object with a token and rtoken OR just a token in case the user had 2FA turned on
+// returns a Promise that resolves to an object with a token and rtoken OR an object with a token in case the user has 2FA turned on
 ```
 ```javascript
 w.logout()
@@ -467,11 +467,27 @@ w.getEmail()
 ```
 ```javascript
 w.requestChangePhoneNumber('123543678')
-// returns a Promise that resolves to empty string
+// returns a Promise that resolves to an empty string
 ```
 ```javascript
 w.submitChangePhoneNumberSMS('123123')
-// returns a Promise that resolves to empty string
+// returns a Promise that resolves to an empty string
+```
+```javascript
+w.get2FAStatus()
+// returns a Promise that resolves to a Bool
+```
+```javascript
+w.get2FASecret({ type: '1' })
+// returns a Promise that resolves to a string
+```
+```javascript
+w.activate2FA('123456', { type: '1' })
+// returns a Promise that resolves with your recovery code
+```
+```javascript
+w.deactivate2FA({ password: 'itspassword' })
+// returns a Promise that resolves to an empty string
 ```
 ```javascript
 w.getAccountColorHexes()
