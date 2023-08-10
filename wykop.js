@@ -8,7 +8,7 @@ const Errors = require('./lib/wykop-errors.js');
 
 module.exports = class Wykop extends API {
 	#core; #database; #instance; #errors
-	constructor({ appkey, secret, token, rtoken, environment, proxies = true, proxyChildren = true, debug = false } = {}) {
+	constructor({ appkey, secret, token, rtoken, environment, proxies = true, proxyChildren = false, debug = false } = {}) {
 		if ((!token || typeof token !== 'string') &&
 			(!rtoken || typeof rtoken !== 'string') &&
 			(appkey === undefined || secret === undefined)
