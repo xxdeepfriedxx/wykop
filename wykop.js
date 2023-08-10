@@ -6,23 +6,9 @@ const API = require('./lib/wykop-api.js');
 const Core = require('./lib/wykop-core.js');
 const Errors = require('./lib/wykop-errors.js');
 
-const Entry = require('./lib/wykop-entry.js');
-const EntryComment = require('./lib/wykop-entry-comment.js');
-const Link = require('./lib/wykop-link.js');
-const LinkComment = require('./lib/wykop-link-comment.js');
-const LinkRelated = require('./lib/wykop-link-related.js');
-const Draft = require('./lib/wykop-link-draft.js');
-const Article = require('./lib/wykop-article.js');
-const Profile = require('./lib/wykop-profile.js');
-const Tag = require('./lib/wykop-tag.js');
-const Conversation = require('./lib/wykop-conversation.js');
-const Badge = require('./lib/wykop-badge.js');
-const Bucket = require('./lib/wykop-bucket.js');
-const {AccountSettings, ProfileSettings} = require('./lib/wykop-settings.js');
-
 module.exports = class Wykop extends API {
 	#core; #database; #instance; #errors
-	constructor({ appkey, secret, token, rtoken, environment, proxies = true, debug = false } = {}) {
+	constructor({ appkey, secret, token, rtoken, environment, proxies = true, proxyChildren = true, debug = false } = {}) {
 		if ((!token || typeof token !== 'string') &&
 			(!rtoken || typeof rtoken !== 'string') &&
 			(appkey === undefined || secret === undefined)
@@ -33,63 +19,64 @@ module.exports = class Wykop extends API {
 		const core = new Core({ appkey: appkey, secret: secret, token: token, rtoken: rtoken, environment: environment, debug: debug });
 		super(core); this.#core = core; this.#instance = core.instance; this.#errors = core.errors; this.#database = core.database
 
-		if (proxies && typeof Proxy !== 'undefined') {
-			return proxymise(this)
-		}
+		if (typeof Proxy === 'undefined') { proxies = false; proxyChildren = false }
+		core.useProxies = proxyChildren
+
+		if (proxies) { return proxymise(this) }
 		return this
 	}
 
 	// === Objects
 	entry = async function(id) {
 		assert(id, this.#errors.assert.notSpecified('id'));
-		return new Entry(this.#core, { id: id })
+		return this.wrapContent('entry', { id: id })
 	}
 
 	entryComment = async function({ id, entryId } = {}) {
 		assert(id, this.#errors.assert.notSpecified('id'));
 		assert(entryId, this.#errors.assert.notSpecified('entryId'));
-		return new EntryComment(this.#core, { id: id, parent: { id: entryId }})
+		return this.wrapContent('entry_comment', { id: id, parent: { id: entryId }})
 	}
 
 	link = async function(id) {
 		assert(id, this.#errors.assert.notSpecified('id'));
-		return new Link(this.#core, { id: id })
+		return this.wrapContent('link', { id: id })
 	}
 
 	linkComment = async function({ id, linkId } = {}) {
 		assert(id, this.#errors.assert.notSpecified('id'));
 		assert(linkId, this.#errors.assert.notSpecified('linkId'));
-		return new LinkComment(this.#core, { id: id, parent: { id: linkId }});
+		return this.wrapContent('link_comment', { id: id, parent: { id: linkId }});
 	}
 
 	article = async function(id) {
 		assert(id, this.#errors.assert.notSpecified('id'));
-		return new Article(this.#core, { id: id })
+		return this.wrapContent('article', { id: id })
 	}
 
 	draft = async function(key) {
 		assert(key, this.#errors.assert.notSpecified('key'));
-		return new Draft(this.#core, { key: key })
+		return this.wrapContent('draft', { key: key })
 	}
 
 	profile = async function(username) {
 		assert(username, this.#errors.assert.notSpecified('username'));
-		return new Profile(this.#core, { username: username });
+		return this.wrapContent('profile', { username: username });
 	}
 
 	tag = async function(tag) {
 		assert(tag, this.#errors.assert.notSpecified('tag'));
-        return new Tag(this.#core, { name: tag })
+        return this.wrapContent('tag', { name: tag })
 	}
 
 	conversation = async function(username) {
 		assert(username, this.#errors.assert.notSpecified('username'));
-        return new Conversation(this.#core, { user: { username: username }})
+        return this.wrapContent('conversation', { user: { username: username }})
 	}
 
 	badge = async function(slug) {
 		assert(slug, this.#errors.assert.notSpecified('slug'));
-		return new Badge(this.#core, { slug: slug })
+		return this.wrapContent('badge', { slug: slug })
 	}
 
 	// === Content ===
@@ -774,11 +761,11 @@ module.exports = class Wykop extends API {
 
 	// === Settings === 
 	getAccountSettings = async function() {
-		return new AccountSettings(this.#core).get()
+		return this.wrapContent('account_settings', {}).get()
 	}
 
 	getProfileSettings = async function() {
-		return new ProfileSettings(this.#core).get()
+		return this.wrapContent('profile_settings', {}).get()
 	}
 
 	getPhone = async function() {
@@ -1030,6 +1017,10 @@ module.exports = class Wykop extends API {
 	}
 
 	// === Helpful ===
+	customRequest = async function(config) {
+		return this.#instance.request(config)
+	}
+
 	getToken = async function() {
 		return this.#core.getTokens()
 	}
