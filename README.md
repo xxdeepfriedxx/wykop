@@ -84,7 +84,8 @@ This constructs a new instance of WykopJS, available options are:
 | `config.token`        | `null`                      | \<optional> Your access token (1) |
 | `config.rtoken`       | `null`                      | \<optional> Your refresh token (1) |
 | `config.environment`  | `https://wykop.pl/api/v3`   | \<optional> The environment (we probably never need this) |
-| `config.proxies`      | `true`                      | \<optional> Proxies allow for Promise chaining but you can turn them off here |
+| `config.proxies`      | `true`                      | \<optional> Proxies allow for Promise chaining but you can turn them off here. This option wraps a Proxy around the `new Wykop({ /*config*/ })` object |
+| `config.proxyChildren`| `true`                      | \<optional> Proxies allow for Promise chaining but you can turn them off here. This option wraps a Proxy around all returned Classes, e.g. `w.getEntry(1234)` will result in a Proxy wrapped `Entry` object |
 | `config.debug`        | `false`                     | \<optional> Mostly just logs the requests and responses we get from the API |
 
 (1) For an instance to successfully initialize, you need to provide at least (a) an `appkey` and a `secret`, (b) a `rtoken` or (c) a `token`. The best option is to provide an `appkey` and `secret`, that way we can generate tokens whenever we need a new one and you don't need to keep track of them. The second best option is to provide a `rtoken`, you'll be logged in and we can generate new tokens, but you'll need to keep track of the latest `rtoken` somewhere, so you can easily create a new Wykop instance. The last option is to provide a `token` but you'll be limited by the expiration date on the token, so it'll just stop working after some time
@@ -524,6 +525,11 @@ w.submitAppeal({ reportId: '1234', content: 'This should not have been deleted!'
 ```javascript
 w.getAppeals({ page: 5 })
 // returns a Promise that resolves to an object
+```
+```javascript
+w.customRequest({ method: 'GET', url: '/entries/1234' })
+// this method takes a standard Axios Request: https://axios-http.com/docs/req_config
+// returns a Promise that to a standard Axios Response: https://axios-http.com/docs/res_schema
 ```
 ```javascript
 w.getToken()
