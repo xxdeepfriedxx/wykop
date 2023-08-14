@@ -109,6 +109,10 @@ w.linkComment({ id: '4321', linkId: '1234' })
 // returns an empty LinkComment object that can be used to access its class functions
 ```
 ```javascript
+w.linkRelated({ id: '4321', linkId: '1234' })
+// returns an empty LinkRelated object that can be used to access its class functions
+```
+```javascript
 w.article('1234')
 // returns an empty Article object that can be used to access its class functions
 ```
@@ -131,6 +135,10 @@ w.conversation('wykop')
 ```javascript
 w.badge('3hbh2jg3b')
 // returns an empty Badge object that can be used to access its class functions
+```
+```javascript
+w.userCategory('3hbh2jg3b')
+// returns an empty Bucket object that can be used to access its class functions
 ```
 ```javascript
 w.getEntry('1234')
@@ -171,6 +179,10 @@ w.getLink('1234')
 ```javascript
 w.getLinkComment({ id: '4321', linkId: '1234' })
 // returns a Promise that resolves to a LinkComment object
+```
+```javascript
+w.getLinkRelated({ id: '4321', linkId: '1234' })
+// returns a Promise that resolves to a LinkRelated object
 ```
 ```javascript
 w.createURLDraft('https://cataas.com/#/')
@@ -347,6 +359,10 @@ w.getCategories()
 // returns a Promise that resolves to an object
 ```
 ```javascript
+w.getUserCategory('3hbh2jg3b')
+// returns a Promise that resolves to a Bucket object
+```
+```javascript
 w.getUserCategories()
 // returns a Promise that resolves to an object, where object.items is a list of Bucket objects
 ```
@@ -355,7 +371,7 @@ w.getUserCategoryStatus()
 // returns a Promise that resolves to an object
 ```
 ```javascript
-w.addUserCategory({ title: 'Moja pierwsza kategoria', query: '#wykop @wykop' })
+w.addUserCategory({ title: 'Moja pierwsza kategoria', query: '#wykop @wykop', defaultPage: 'home' })
 // returns a Promise that resolves to a Bucket object
 ```
 ```javascript
@@ -979,11 +995,15 @@ badge.users()
 
 ### Available functions on `Bucket` objects:
 ```javascript
-bucket.getContent({ page = null })
+bucket.get()
+// returns a Promise that resolves to a Bucket object - you can use this to refresh
+```
+```javascript
+bucket.getContent({ page: null })
 // returns a Promise that resolves to an object, where object.items is a list of Link and Entry objects
 ```
 ```javascript
-bucket.edit({ title: 'New title!', query: '#tags @users keywords' })
+bucket.edit({ title: 'New title!', query: '#tags @users keywords', defaultPage: 'entries' })
 // returns a Promise that resolves to the Bucket object
 ```
 ```javascript

@@ -49,6 +49,12 @@ module.exports = class Wykop extends API {
 		return this.wrapContent('link_comment', { id: id, parent: { id: linkId }});
 	}
 
+	linkRelated = async function({ id, linkId } = {}) {
+		assert(id, this.#errors.assert.notSpecified('id'));
+		assert(linkId, this.#errors.assert.notSpecified('linkId'));
+		return this.wrapContent('link_related', { id: id }, linkId);
+	}
+
 	article = async function(id) {
 		assert(id, this.#errors.assert.notSpecified('id'));
 		return this.wrapContent('article', { id: id })
@@ -77,6 +83,11 @@ module.exports = class Wykop extends API {
 	badge = async function(slug) {
 		assert(slug, this.#errors.assert.notSpecified('slug'));
 		return this.wrapContent('badge', { slug: slug })
+	}
+
+	userCategory = async function(hash) {
+		assert(hash, this.#errors.assert.notSpecified('hash'));
+		return this.wrapContent('bucket', { hash: hash })
 	}
 
 	// === Content ===
@@ -170,6 +181,10 @@ module.exports = class Wykop extends API {
 	getLinkComment = async function({ id, linkId } = {}) {
 		return this.linkComment({ id: id, linkId: linkId }).then(x => x.get());
 	}
+
+	getLinkRelated = async function({ id, linkId } = {}) {
+		return this.linkRelated({ id: id, linkId: linkId }).then(x => x.get());
+	}	
 
 	createURLDraft = async function(url) {
 		assert(url, this.#errors.assert.notSpecified('url'));
@@ -529,6 +544,10 @@ module.exports = class Wykop extends API {
 		return this.wrapListing('none', this.#instance.get('/categories'));
 	}
 
+	getUserCategory = async function(hash) {
+		return this.userCategory(hash).then(x => x.get());
+	}
+
 	getUserCategories = async function() {
 		return this.wrapListing('bucket', this.#instance.get('/buckets'));
 	}
@@ -537,13 +556,15 @@ module.exports = class Wykop extends API {
 		return this.wrapListing('bucket', this.#instance.get('/buckets/status'));
 	}
 
-	addUserCategory = async function({ title = null, query = null } = {}) {
+	addUserCategory = async function({ title = null, query = null, defaultPage = 'home' } = {}) {
 		assert(title, this.#errors.assert.notSpecified('title'));
 		assert(query, this.#errors.assert.notSpecified('query'));
+		assert(['home', 'upcoming', 'entries'].includes(defaultPage), this.#errors.assert.invalidValue('defaultPage', 'home, upcoming, entries'));
 		return this.wrapContent('bucket', this.#instance.post('/buckets', {
 			data: {
 				title: title,
-				query: query
+				query: query,
+				default_page: defaultPage,
 			}
 		}));
 	}
