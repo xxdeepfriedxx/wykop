@@ -30,7 +30,7 @@ The wrapper 'wraps' most response data in classes that have their own functions,
 ```javascript
 const activity = await upvotes.items[0].user.getActions()
 ```
-instead of like this (but would also work):
+instead of like this (which but would also work):
 ```javascript
 const activity = await w.getProfile(upvotes.items[0].user.username).getActions()
 ```
@@ -47,7 +47,7 @@ const Wykop = require('wykop');
     const upvotes = await w.getHomepage({ sort: 'newest' }).items[0].getUpvotes();
 
     // get the latest activity of the first upvoter
-    const activity = await upvotes[0].user.getActions()
+    const activity = await upvotes.items[0].user.getActions()
 
     console.log(activity);
 })();
