@@ -20,12 +20,12 @@ const upvoterLists = [
 		rtoken: getRefreshToken()
 	});
 
-	let users = []
+	let users = [];
 	for (let entryId of upvoterLists) {
 
 		// get the upvoters and append them to our 'users' list
-		const upvoters = await w.entry(entryId).getUpvoters()
-		users = users.concat(upvoters.items.map(x => '@' + x.username))
+		const upvoters = await w.entry(entryId).getUpvoters();
+		users = users.concat(upvoters.items.map(x => '@' + x.username));
 	}
 
 	// remove duplicate users in our list
@@ -39,7 +39,7 @@ const upvoterLists = [
 		await new Promise(resolve => setTimeout(resolve, 3000));
 
 		// Add our comment to our entry
-		await w.entry(newEntryId).submitComment({ content: '!' + chunk })
+		await w.entry(newEntryId).submitComment({ content: '!' + chunk });
 	}
 
 	// here saveRefreshToken() would be a function that saves your last rtoken to a file
