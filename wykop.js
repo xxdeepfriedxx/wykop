@@ -92,11 +92,11 @@ module.exports = class Wykop extends API {
 
 	// === Content ===
 	getEntry = async function(id) {
-		return this.entry(id).then(x => x.get());
+		return this.entry(id).then(res => res.get());
 	}
 
 	getEntryComment = async function({ id, entryId } = {}) {
-		return this.entryComment({ id: id, entryId: entryId }).then(x => x.get());
+		return this.entryComment({ id: id, entryId: entryId }).then(res => res.get());
 	}
 
 	submitEntry = async function({ content = null, photo = null, embed = null, survey = null, adult = false } = {}) {
@@ -113,8 +113,8 @@ module.exports = class Wykop extends API {
 
 	submitEntryComment = async function({ entryId = null, content = null, photo = null, embed = null, survey = null, adult = false } = {}) {
 		assert(entryId, this.#errors.assert.notSpecified('entryId'));
-		return this.entry(entryId).then(x => { 
-			return x.submitComment({ 
+		return this.entry(entryId).then(res => { 
+			return res.submitComment({ 
 				content: content, 
 				photo: photo, 
 				embed: embed, 
@@ -175,15 +175,15 @@ module.exports = class Wykop extends API {
 	}
 
 	getLink = async function(id) {
-		return this.link(id).then(x => x.get());
+		return this.link(id).then(res => res.get());
 	}
 
 	getLinkComment = async function({ id, linkId } = {}) {
-		return this.linkComment({ id: id, linkId: linkId }).then(x => x.get());
+		return this.linkComment({ id: id, linkId: linkId }).then(res => res.get());
 	}
 
 	getLinkRelated = async function({ id, linkId } = {}) {
-		return this.linkRelated({ id: id, linkId: linkId }).then(x => x.get());
+		return this.linkRelated({ id: id, linkId: linkId }).then(res => res.get());
 	}	
 
 	createURLDraft = async function(url) {
@@ -196,7 +196,7 @@ module.exports = class Wykop extends API {
 	}
 
 	getArticle = async function(id) {
-		return this.article(id).then(x => x.get());
+		return this.article(id).then(res => res.get());
 	}
 
 	createArticleDraft = async function({ title = null, content = null, html = null } = {}) {
@@ -212,23 +212,23 @@ module.exports = class Wykop extends API {
 	}
 
 	getDraft = async function(key) {
-		return this.draft(key).then(x => x.get());
+		return this.draft(key).then(res => res.get());
 	}
 
     getConversation = async function(username) {
-		return this.conversation(username).then(x => x.get());
+		return this.conversation(username).then(res => res.get());
     }
 
     getTag = async function(tag, config) {
-		return this.tag(tag).then(x => x.get());
+		return this.tag(tag).then(res => res.get());
     }
 
     getTagContent = async function(tag, config) {
-		return this.tag(tag).then(x => x.getContent(config))
+		return this.tag(tag).then(res => res.getContent(config))
     }
 
 	getProfile = async function(username) {
-		return this.profile(username).then(x => x.get());
+		return this.profile(username).then(res => res.get());
 	}
 
 	getMe = async function() {
@@ -244,7 +244,7 @@ module.exports = class Wykop extends API {
 	}
 
 	getBadge = async function(slug) {
-		return this.badge(slug).then(x => x.get());
+		return this.badge(slug).then(res => res.get());
 	}
 
 	// Get links that are on the homepage or in upcomming
@@ -524,7 +524,7 @@ module.exports = class Wykop extends API {
 	}
 
 	getOpenConversation = async function() {
-		return this.wrapContent('conversation', { user: { username: await this.#instance.get('/pm/open').then(res => res.data) }}).get();
+		return this.wrapContent('conversation', { user: { username: this.wrapContent('none', await this.#instance.get('/pm/open')) }}).get();
 	}
 
 	markAllConversationsAsRead = async function() {
@@ -545,7 +545,7 @@ module.exports = class Wykop extends API {
 	}
 
 	getUserCategory = async function(hash) {
-		return this.userCategory(hash).then(x => x.get());
+		return this.userCategory(hash).then(res => res.get());
 	}
 
 	getUserCategories = async function() {
@@ -614,8 +614,10 @@ module.exports = class Wykop extends API {
 
 		return this.wrapContent('none', this.#instance.post('/login', request)).then(res => {
 			if (!res.refresh_token) { 
-				res.info = 'This means the user has 2FA turned on, call w.submit2FACode with this token and 2FA code'
-				return res 
+				return {
+					token: res.token,
+					info: 'This means the user has 2FA turned on, call w.submit2FACode with this token and 2FA code'
+				} 
 			}
 			return this.#core.saveTokens(res.token, res.refresh_token);
 		});
@@ -636,7 +638,9 @@ module.exports = class Wykop extends API {
 				code: code
 			}
 		})).then(res => {
-			if (res && (res.token || res.refresh_token) ) { return this.#core.saveTokens(res.token, res.refresh_token); }
+			if (res && (res.token || res.refresh_token) ) { 
+				return this.#core.saveTokens(res.token, res.refresh_token); 
+			}
 			return ''
 		});
 	}
@@ -649,7 +653,9 @@ module.exports = class Wykop extends API {
 				code: code
 			}
 		})).then(res => {
-			if (res && (res.token || res.refresh_token) ) { return this.#core.saveTokens(res.token, res.refresh_token); }
+			if (res && (res.token || res.refresh_token) ) { 
+				return this.#core.saveTokens(res.token, res.refresh_token); 
+			}
 			return ''
 		});
 	}
@@ -713,8 +719,10 @@ module.exports = class Wykop extends API {
 	// === Wykop Connect ===
 	getWykopConnectURL = async function() {
 		return this.wrapContent('none', this.#instance.get('/connect')).then(res => {
-			res.token = res.connect_url.split('/').pop()
-			return res
+			return {
+				connect_url: res.connect_url,
+				token: res.connect_url.split('/').pop()
+			}
 		});
 	}
 
@@ -736,10 +744,12 @@ module.exports = class Wykop extends API {
 				add_vote: add_vote
 			}
 		})).then(res => {
-			res.domain = res.redirect_url.match(/(.+)\?/)[1]
-			res.token = res.redirect_url.match(/(?:token=)([\w.-]+)/)[1]
-			res.rtoken = res.redirect_url.match(/(?:rtoken=)([\w.-]+)/)[1]
-			return res
+			return {
+				redirect_url: res.redirect_url,
+				domain: res.redirect_url.match(/(.+)\?/)[1],
+				token: res.redirect_url.match(/(?:token=)([\w.-]+)/)[1],
+				rtoken: res.redirect_url.match(/(?:rtoken=)([\w.-]+)/)[1]
+			}
 		});
 	}
 
@@ -833,11 +843,11 @@ module.exports = class Wykop extends API {
 
 	// === 2FA ===
 	get2FAStatus = async function() {
-		return this.wrapContent('none', this.#instance.get('/settings/2fa/status')).then(x => x.active)
+		return this.wrapContent('none', this.#instance.get('/settings/2fa/status')).then(res => res.active)
 	}
 
 	get2FASecret = async function({ type = 1 } = {}) {
-		return this.wrapContent('none', this.#instance.post('/settings/2fa/' + type)).then(x => x.secret)
+		return this.wrapContent('none', this.#instance.post('/settings/2fa/' + type)).then(res => res.secret)
 	}
 
 	activate2FA = async function({ type = 1, code = null } = {}) {
@@ -846,7 +856,7 @@ module.exports = class Wykop extends API {
 			data: {
 				code: code
 			}
-		})).then(x => x.recovery_token)
+		})).then(res => res.recovery_token)
 	}
 
 	deactivate2FA = async function({ password = null, code = null } = {}) {
@@ -856,9 +866,9 @@ module.exports = class Wykop extends API {
 			data: {
 				password: password
 			}
-		})).then(response => {
+		})).then(res => {
 			return this.submit2FACode({
-				token: response.token,
+				token: res.token,
 				code: code
 			})
 		})
