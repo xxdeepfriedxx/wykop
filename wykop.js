@@ -616,10 +616,10 @@ module.exports = class Wykop extends API {
 
 		return this.wrapContent('none', this.#instance.post('/login', request)).then(res => {
 			if (!res.refresh_token) { 
-				return {
-					token: res.token,
-					info: 'This means the user has 2FA turned on, call w.submit2FACode with this token and 2FA code'
-				};
+				return this.#requires2FACode({
+					type: 'login', 
+					token: res.token
+				});
 			}
 			return this.#core.saveTokens(res.token, res.refresh_token);
 		});
@@ -728,12 +728,6 @@ module.exports = class Wykop extends API {
 		});
 	};
 
-	// Doesn't seem to work?
-	getWykopConnectStatus = async function(token) {
-		assert(token, this.#errors.assert.notSpecified('token'));
-		return this.wrapContent('none', this.#instance.get('/connect/' + token));
-	};
-
 	acceptWykopConnectPermissions = async function(token, { send_message = false, read_profile = false, add_comment = false, add_link = false, add_entry = false, add_vote = false } = {}) {
 		assert(token, this.#errors.assert.notSpecified('token'));
 		return this.wrapContent('none', this.#instance.put('/connect/' + token, {
@@ -755,9 +749,7 @@ module.exports = class Wykop extends API {
 		});
 	};
 
-
 	// === Authorize ===
-	// Get a list of account blockades - what kind of blokades?
 	getAccountBlockades = async function() {
 		return this.wrapListing('none', this.#instance.get('/security/authorize'));
 	};
@@ -811,7 +803,15 @@ module.exports = class Wykop extends API {
 			data: {
 				phone: phone
 			}
-		}));
+		})).then(res => {
+			if (res && res.token) {
+				return this.#requires2FACode({
+					type: 'requestChangePhoneNumberSMS', 
+					token: res.token
+				}); 
+			}
+			return res;
+		});
 	};
 
 	submitChangePhoneNumberSMS = async function(code) {
@@ -836,11 +836,75 @@ module.exports = class Wykop extends API {
 				email_confirmation: email,
 				password: password
 			}
-		}));
+		})).then(res => {
+			if (res && res.token) {
+				return this.#requires2FACode({
+					type: 'requestChangeEmail', 
+					token: res.token
+				}); 
+			}
+			return res;
+		});
 	};
 
 	submitChangeEmail = async function(hash) {
 		return this.wrapContent('none', this.#instance.get('/settings/changeemailconfirm/' + hash));
+	};
+
+	requestAccountDeletion = async function(password) {
+		return this.wrapContent('none', this.#instance.post('/users/account/delete/mail/send', {
+			data: {
+				password: password
+			}
+		})).then(res => {
+			if (res && res.token) { 
+				return this.#requires2FACode({
+					type: 'requestAccountDeletion', 
+					token: res.token
+				});
+			}
+			return res;
+		});
+	};
+
+	confirmAccountDeletion = async function(hash) {
+		return this.wrapContent('none', this.#instance.post('/users/account/delete/confirm', {
+			data: {
+				hash: hash
+			}
+		}));
+	};
+
+	requestAccountDataCopy = async function(password) {
+		return this.wrapContent('none', this.#instance.post('/users/account/gdpr/txt', {
+			data: {
+				password: password
+			}
+		})).then(res => {
+			if (res && res.token) { 
+				return this.#requires2FACode({
+					type: 'requestAccountDataCopy', 
+					token: res.token
+				});
+			}
+			return res;
+		});
+	};
+
+	requestAccountDataTransfer = async function(password) {
+		return this.wrapContent('none', this.#instance.post('/users/account/gdpr/json', {
+			data: {
+				password: password
+			}
+		})).then(res => {
+			if (res && res.token) { 
+				return this.#requires2FACode({
+					type: 'requestAccountDataTransfer', 
+					token: res.token
+				});
+			}
+			return res;
+		});
 	};
 
 	// === 2FA ===
@@ -876,6 +940,45 @@ module.exports = class Wykop extends API {
 		});
 	};
 
+	// === 2FA / Callback ===
+	#requires2FACodeCallback = null;
+	#requires2FACode = async function({ type, token } = {}) {
+		const data = {
+			type: type,
+			token: token,
+			info: 'This user has 2FA turned on. To continue you need to call w.submit2FACode() with the token in this object as well as the user\'s 2FA code. You can also listen for 2FA requirements by implementing w.handle2FACodeRequired()'
+		};
+
+		if (type && token && typeof this.#requires2FACodeCallback === 'function') { 
+			return Promise.resolve(this.#requires2FACodeCallback(data)).finally(() => data);
+		}
+
+		return data;
+	};
+
+	handle2FACodeRequired = async function(callback) {
+		assert(typeof callback === 'function', this.#errors.assert.invalidType('callback', 'function'));
+		this.#requires2FACodeCallback = callback;
+	};
+
+	// === Active Sessions ===
+	getUserSessions = async function() {
+		return this.wrapListing('none', this.#instance.get('/settings/session'));
+	};
+
+	removeUserSession = async function(id) {
+		return this.wrapContent('none', this.#instance.delete('/settings/session/' + id));
+	};
+
+	// === Wykop Connect Apps ===
+	getConnectApplications = async function() {
+		return this.wrapListing('none', this.#instance.get('/settings/applications'));
+	};
+
+	removeConnectApplication = async function(id) {
+		return this.wrapContent('none', this.#instance.delete('/settings/applications/' + id));
+	};
+
 	// === Blacklist / Users ===
 	getBlacklistUsers = async function() {
 		return this.wrapListing('profile', this.#instance.get('/settings/blacklists/users'));
@@ -887,12 +990,12 @@ module.exports = class Wykop extends API {
 			data: {
 				username: username
 			}
-		}));
+		})).then(() => this);
 	};
 
 	removeUserFromBlacklist = async function(username = null) {
 		assert(username, this.#errors.assert.notSpecified('username'));
-		return this.wrapContent('none', this.#instance.delete('/settings/blacklists/users/' + username));
+		return this.wrapContent('none', this.#instance.delete('/settings/blacklists/users/' + username)).then(() => this);
 	};
 
 	// === Blacklist / Tags ===
@@ -906,12 +1009,12 @@ module.exports = class Wykop extends API {
 			data: {
 				tag: tag
 			}
-		}));
+		})).then(() => this);
 	};
 
 	removeTagFromBlacklist = async function(tag = null) {
 		assert(tag, this.#errors.assert.notSpecified('tag'));
-		return this.wrapContent('none', this.#instance.delete('/settings/blacklists/tags/' + tag));
+		return this.wrapContent('none', this.#instance.delete('/settings/blacklists/tags/' + tag)).then(() => this);
 	};
 
 	// === Blacklist / Domains ===
@@ -925,17 +1028,13 @@ module.exports = class Wykop extends API {
 			data: {
 				domain: domain
 			}
-		}));
+		})).then(() => this);
 	};
 
 	removeDomainFromBlacklist = async function(domain = null) {
 		assert(domain, this.#errors.assert.notSpecified('domain'));
-		return this.wrapContent('none', this.#instance.delete('/settings/blacklists/domains/' + domain));
+		return this.wrapContent('none', this.#instance.delete('/settings/blacklists/domains/' + domain)).then(() => this);
 	};
-
-	// general = new General(this.#core);
-	// sessions = new Sessions(this.#core);
-	// delete account?
 
 	// === Config ===
 	getAccountColorHexes = async function() {
@@ -1078,7 +1177,7 @@ module.exports = class Wykop extends API {
 	}
 
 	tokenExpireDate = async function() {
-		return new Date((this.#tokenData?.exp?? 0) * 1000);
+		return new Date((this.#tokenData?.exp ?? 0) * 1000);
 	};
 
 	hasTokenExpired = async function() {

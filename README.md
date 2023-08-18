@@ -47,7 +47,7 @@ const Wykop = require('wykop');
     const upvotes = await w.getHomepage({ sort: 'newest' }).items[0].getUpvotes();
 
     // get the latest activity of the first upvoter
-    const activity = await upvotes.items[0].user.getActions()
+    const activity = await upvotes.items[0].user.getActions();
 
     console.log(activity);
 })();
@@ -65,6 +65,7 @@ const Wykop = require('wykop');
 - [`LinkRelated` functions](#available-functions-on-linkrelated-objects)
 - [`Draft` functions](#available-functions-on-draft-objects)
 - [`Article` functions](#available-functions-on-article-objects)
+- [`ArticleHistory` functions](#available-functions-on-articlehistory-objects)
 - [`Conversation` functions](#available-functions-on-conversation-objects)
 - [`Profile` functions](#available-functions-on-profile-objects)
 - [`Tag` functions](#available-functions-on-tag-objects)
@@ -382,7 +383,7 @@ w.getBadges()
 // returns a Promise that resolves to an object, where object.items is a list of Badge objects
 ```
 ```javascript
-w.getRanking({ page: null })
+w.getRanking({ page: 10 })
 // returns a Promise that resolves to an object, where object.items is a list of Profile objects
 ```
 ```javascript
@@ -434,10 +435,6 @@ w.getWykopConnectURL()
 // returns a Promise that resolves to an object
 ```
 ```javascript
-w.getWykopConnectStatus('3hbh2jg3b')
-// returns a Promise that resolves to an object - this doesn't seem to work properly though
-```
-```javascript
 w.acceptWykopConnectPermissions('3hbh2jg3b', { send_message: true, read_profile: false, add_comment: false, add_link: false, add_entry: false, add_vote: false })
 // returns a Promise that resolves to an object with a token and rtoken as well as the redirect_url
 ```
@@ -478,16 +475,40 @@ w.getPhone()
 // returns a Promise that resolves to a string
 ```
 ```javascript
-w.getEmail()
-// returns a Promise that resolves to a string
-```
-```javascript
 w.requestChangePhoneNumber('123543678')
-// returns a Promise that resolves to an empty string
+// returns a Promise that resolves to an empty string OR an object with a token in case the user has 2FA turned on
 ```
 ```javascript
 w.submitChangePhoneNumberSMS('123123')
 // returns a Promise that resolves to an empty string
+```
+```javascript
+w.getEmail()
+// returns a Promise that resolves to a string
+```
+```javascript
+w.requestChangeEmail()
+// returns a Promise that resolves to an empty string OR an object with a token in case the user has 2FA turned on
+```
+```javascript
+w.submitChangeEmail()
+// returns a Promise that resolves to an empty string
+```
+```javascript
+w.requestAccountDeletion()
+// returns a Promise that resolves to an empty string OR an object with a token in case the user has 2FA turned on
+```
+```javascript
+w.confirmAccountDeletion()
+// returns a Promise that resolves to an empty string
+```
+```javascript
+w.requestAccountDataCopy()
+// returns a Promise that resolves to an empty string OR an object with a token in case the user has 2FA turned on
+```
+```javascript
+w.requestAccountDataTransfer()
+// returns a Promise that resolves to an empty string OR an object with a token in case the user has 2FA turned on
 ```
 ```javascript
 w.get2FAStatus()
@@ -498,12 +519,70 @@ w.get2FASecret({ type: '1' })
 // returns a Promise that resolves to a string
 ```
 ```javascript
-w.activate2FA('123456', { type: '1' })
+w.activate2FA({ code: '123456', type: '1' })
 // returns a Promise that resolves with your recovery code
 ```
 ```javascript
-w.deactivate2FA({ password: 'itspassword' })
+w.deactivate2FA({ password: 'itspassword', code: '123456' })
 // returns a Promise that resolves to an empty string
+```
+```javascript
+w.handle2FACodeRequired(async ({ type, token }) => {
+    // Here you would request user input and then call w.submit2FACode() with the token and 2FA code
+})
+// this callback will be called whenever a 2FA code is required. Returns a Promise that resolves to undefined
+```
+```javascript
+w.getUserSessions()
+// returns a Promise that resolves to null
+```
+```javascript
+w.removeUserSession('12341234')
+// returns a Promise that resolves to an object, where object.items is a list of Profile objects
+```
+```javascript
+w.getConnectApplications()
+// returns a Promise that resolves to null
+```
+```javascript
+w.removeConnectApplication('12341234')
+// returns a Promise that resolves to an object, where object.items is a list of Profile objects
+```
+```javascript
+w.getBlacklistUsers()
+// returns a Promise that resolves to an object, where object.items is a list of Profile objects
+```
+```javascript
+w.addUserToBlacklist()
+// returns a Promise that resolves to the Wykop object
+```
+```javascript
+w.removeUserFromBlacklist()
+// returns a Promise that resolves to the Wykop object
+```
+```javascript
+w.getBlacklistTags()
+// returns a Promise that resolves to an object, where object.items is a list of Tag objects
+```
+```javascript
+w.addTagToBlacklist()
+// returns a Promise that resolves to the Wykop object
+```
+```javascript
+w.removeTagFromBlacklist()
+// returns a Promise that resolves to the Wykop object
+```
+```javascript
+w.getBlacklistDomains()
+// returns a Promise that resolves to an object, where object.items is a list of objects
+```
+```javascript
+w.addDomainToBlacklist()
+// returns a Promise that resolves to the Wykop object
+```
+```javascript
+w.removeDomainFromBlacklist()
+// returns a Promise that resolves to the Wykop object
 ```
 ```javascript
 w.getAccountColorHexes()
@@ -584,6 +663,10 @@ After getting an entry, either from a listing like `w.getMicroblog()` or directl
 ```javascript
 entry.get()
 // returns a Promise that resolves to an Entry object - you can use this to refresh
+```
+```javascript
+entry.getComment('4321')
+// returns a Promise that resolves to an EntryComment object
 ```
 ```javascript
 entry.getComments()
@@ -715,6 +798,14 @@ link.unfavorite()
 // returns a Promise that resolves to the Link object
 ```
 ```javascript
+link.toggleMuteAMA()
+// returns a Promise that resolves to the Link object
+```
+```javascript
+link.finishAMA()
+// returns a Promise that resolves to the Link object
+```
+```javascript
 link.getUpvotes()
 // returns a Promise that resolves to an object, where object.items is an object, where object.items[0].user is a Profile object
 ```
@@ -776,24 +867,28 @@ comment.unfavorite()
 
 ### Available functions on `LinkRelated` objects:
 ```javascript
+related.get()
+// returns a Promise that resolves to a LinkRelated object - you can use this to refresh
+```
+```javascript
+related.edit({ title: 'Related to your link', url: 'https://example.com', adult: false })
+// returns a Promise that resolves to the LinkRelated object
+```
+```javascript
 related.remove()
 // returns a Promise that resolves to an empty string
 ```
 ```javascript
-related.edit({ title: 'Related to your link', url: 'https://example.com', adult: false })
-// returns a Promise that resolves to the LinkComment object
-```
-```javascript
 related.upvote()
-// returns a Promise that resolves to the LinkComment object
+// returns a Promise that resolves to the LinkRelated object
 ```
 ```javascript
 related.downvote()
-// returns a Promise that resolves to the LinkComment object
+// returns a Promise that resolves to the LinkRelated object
 ```
 ```javascript
 related.unvote()
-// returns a Promise that resolves to the LinkComment object
+// returns a Promise that resolves to the LinkRelated object
 ```
 
 ### Available functions on `Draft` objects:
@@ -826,6 +921,12 @@ article.edit({ title: 'Edited title!', content: 'Edited description', html: 'Ran
 ```javascript
 article.remove()
 // returns a Promise that resolves to an empty string
+```
+
+### Available functions on `ArticleHistory` objects:
+```javascript
+history.get()
+// returns a Promise that resolves to an Article object
 ```
 
 ### Available functions on `Conversation` objects:
@@ -988,7 +1089,7 @@ badge.get()
 // returns a Promise that resolves to a Badge object - you can use this to refresh
 ```
 ```javascript
-badge.users()
+badge.getUsers()
 // returns a Promise that resolves to an object, where object.items is a list of Profile objects
 ```
 
