@@ -1173,7 +1173,8 @@ module.exports = class Wykop extends API {
 
 	get #tokenData() {
 		if (!this.#database.token) { return null; }
-		return JSON.parse(atob(this.#database.token.split('.')[1]));
+		// return JSON.parse(atob(this.#database.token.split('.')[1]));
+		return JSON.parse(Buffer.from(this.#database.token.split('.')[1], 'base64').toString('binary'));
 	}
 
 	tokenExpireDate = async function() {
