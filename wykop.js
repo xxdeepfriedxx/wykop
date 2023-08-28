@@ -352,6 +352,15 @@ module.exports = class Wykop extends API {
 		return this.#getEntries(config);
 	};
 
+	getNewerEntriesCount = async function({ lastId = null, category = null }) {
+		assert(lastId, this.#errors.assert.notSpecified('lastId'));
+		return this.wrapContent('none', this.#instance.get('/entries/' + lastId + '/newer', {
+			params: {
+				category: category
+			}
+		})).then(res => res.count);
+	};
+
 	getFavoriteContent = async function({ sort = null, type = null, page = null } = {}) {
 		assert(['newest', 'oldest', null].includes(sort), this.#errors.assert.invalidValue('sort', 'newest, oldest'));
 		assert(['link', 'entry', 'link_comment', 'entry_comment', null].includes(type), this.#errors.assert.invalidValue('type', 'link, entry, link_comment, entry_comment'));

@@ -46,3 +46,6 @@ const upvoterLists = [
 	saveRefreshToken(await w.databaseExtract());
 
 })();
+
+const getRefreshToken = () => {};
+const saveRefreshToken = () => {};

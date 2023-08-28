@@ -262,6 +262,10 @@ w.getMicroblog({ sort: 'hot', lastUpdate: '12', category: null, bucket: '3hbh2jg
 // returns a Promise that resolves to an object, where object.items is a list of Entry objects
 ```
 ```javascript
+w.getNewerEntriesCount({ lastId: '1234', category: '3hbh2jg3b' })
+// returns a Promise that resolves to a string
+```
+```javascript
 w.getFavoriteContent({ sort: 'oldest', type: 'entry', page: null })
 // returns a Promise that resolves to an object, where object.items is a list of Link and/or Entry objects
 ```
@@ -673,7 +677,11 @@ entry.getComments()
 // returns a Promise that resolves to an object, where object.items is a list of EntryComment objects
 ```
 ```javascript
-entry.submitComment({ content = 'Nice entry you have there1', photo = null, embed = null, adult = false } 
+entry.getNewerCommentsCount({ date: w.formatDate(new Date) })
+// returns a Promise that resolves to a string
+```
+```javascript
+entry.submitComment({ content = 'Nice entry you have there!', photo = null, embed = null, adult = false })
 // returns a Promise that resolves to an EntryComment object
 ```
 ```javascript
