@@ -1,8 +1,9 @@
 {
   "name": "wykop",
-  "version": "1.1.11",
+  "version": "1.1.12",
   "description": "Wrapper for the new Wykop API v3 written in NodeJS",
   "homepage": "https://github.com/xxdeepfriedxx/wykop",
+  "repository": "https://github.com/xxdeepfriedxx/wykop",
   "license": "SEE LICENSE IN LICENSE",
   "main": "wykop.js",
   "scripts": {
@@ -16,7 +17,7 @@
   "devDependencies": {
     "eslint": "^8.47.0"
   },
-  "engines" : { 
+  "engines": {
     "node": ">=14.17.0"
   },
   "eslintConfig": {
