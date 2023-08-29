@@ -469,9 +469,9 @@ module.exports = class Wykop extends API {
 			return this.wrapContent('none', this.#instance.get('/search/' + type + (stringParams.length ? `?${stringParams}` : ''), { 
 				params: params
 			})).then(async res => {
-				if (res.links.items) { res.links.items = await this.wrapListing('link', res.links.items); }
-				if (res.entries.items) { res.entries.items = await this.wrapListing('entry', res.entries.items); }
-				if (res.users.items) { res.users.items = await this.wrapListing('profile', res.users.items); }
+				if (res.links.items) { res.links.items = this.wrapListing('link', res.links.items); }
+				if (res.entries.items) { res.entries.items = this.wrapListing('entry', res.entries.items); }
+				if (res.users.items) { res.users.items = this.wrapListing('profile', res.users.items); }
 				return res;
 			});
 		}
@@ -590,7 +590,7 @@ module.exports = class Wykop extends API {
 	};
 
 	getBadges = async function() {
-		return this.wrapListing('badge', this.#instance.get('/badges').then(res => res.data.flat())); 
+		return this.wrapListing('badge', this.#instance.get('/badges')); 
 	};
 
 	getRanking = async function({ page = null } = {}) {
@@ -917,7 +917,7 @@ module.exports = class Wykop extends API {
 	};
 
 	// === 2FA ===
-	get2FAStatus = async function() {
+	is2FAEnabled = async function() {
 		return this.wrapContent('none', this.#instance.get('/settings/2fa/status')).then(res => res.active);
 	};
 
@@ -989,45 +989,33 @@ module.exports = class Wykop extends API {
 	};
 
 	// === Blacklist / Users ===
-	getBlacklistUsers = async function() {
+	getBlacklistedUsers = async function() {
 		return this.wrapListing('profile', this.#instance.get('/settings/blacklists/users'));
 	};
 
 	addUserToBlacklist = async function(username = null) {
-		assert(username, this.#errors.assert.notSpecified('username'));
-		return this.wrapContent('none', this.#instance.post('/settings/blacklists/users', {
-			data: {
-				username: username
-			}
-		})).then(() => this);
+		return this.profile(username).then(user => user.blacklist()).then(() => this);
 	};
 
 	removeUserFromBlacklist = async function(username = null) {
-		assert(username, this.#errors.assert.notSpecified('username'));
-		return this.wrapContent('none', this.#instance.delete('/settings/blacklists/users/' + username)).then(() => this);
+		return this.profile(username).then(user => user.unblacklist()).then(() => this);
 	};
 
 	// === Blacklist / Tags ===
-	getBlacklistTags = async function() {
+	getBlacklistedTags = async function() {
 		return this.wrapListing('tag', this.#instance.get('/settings/blacklists/tags'));
 	};
 
 	addTagToBlacklist = async function(tag = null) {
-		assert(tag, this.#errors.assert.notSpecified('tag'));
-		return this.wrapContent('none', this.#instance.post('/settings/blacklists/tags', {
-			data: {
-				tag: tag
-			}
-		})).then(() => this);
+		return this.tag(tag).then(tag => tag.blacklist()).then(() => this);
 	};
 
 	removeTagFromBlacklist = async function(tag = null) {
-		assert(tag, this.#errors.assert.notSpecified('tag'));
-		return this.wrapContent('none', this.#instance.delete('/settings/blacklists/tags/' + tag)).then(() => this);
+		return this.tag(tag).then(tag => tag.unblacklist()).then(() => this);
 	};
 
 	// === Blacklist / Domains ===
-	getBlacklistDomains = async function() {
+	getBlacklistedDomains = async function() {
 		return this.wrapListing('none', this.#instance.get('/settings/blacklists/domains'));
 	};
 
@@ -1093,7 +1081,7 @@ module.exports = class Wykop extends API {
 			return this.wrapContent('none', this.#instance.post('/contact/support', form, requestData));
 		}
 
-		return this.wrapContent('none', this.#instance.post('/contact/support', requestData));
+		return this.wrapContent('none', this.#instance.post('/contact/support', requestData)).then(() => this);
 	};
 
 	submitGDPRMessage = async function({ email = null, message = null } = {}) {
@@ -1104,7 +1092,7 @@ module.exports = class Wykop extends API {
 				email: email,
 				message: message
 			}
-		}));
+		})).then(() => this);
 	};
 
 	// === Moderation ===
@@ -1146,7 +1134,7 @@ module.exports = class Wykop extends API {
 			data: {
 				content: content
 			}
-		}));
+		})).then(() => this);
 	};
 
 	getAppeals = async function({ page = null } = {}) {

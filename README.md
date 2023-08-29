@@ -22,7 +22,7 @@ const w = new Wykop({ /*config*/ });
 ```
 
 ### Examples
-Here we use our token to get the list of upvotes from the newest post currently on the homepage:
+Here we get the list of upvotes from the newest post currently on the homepage:
 ```javascript
 const upvotes = await w.getHomepage({ sort: 'newest' }).items[0].getUpvotes();
 ```
@@ -74,6 +74,8 @@ const Wykop = require('wykop');
 - [`Notification` functions](#available-functions-on-personalnotification-tagnotification-and-pmnotification-objects)
 - [`AccountSettings` functions](#available-functions-on-accountsettings-objects)
 - [`ProfileSettings` functions](#available-functions-on-profilesettings-objects)
+- [`Listing` functions](#available-functions-directly-on-the-listing-object)
+- [`Pagination` functions](#available-functions-directly-on-the-pagination-object)
 
 ### new Wykop(config)
 This constructs a new instance of WykopJS, available options are:
@@ -215,7 +217,7 @@ w.getTag = function(tag, config) {
 ```
 ```javascript
 w.getTagContent = function(tag, config) {
-// returns a Promise that resolves to a object, where object.items is a list of Entry and Link objects
+// returns a Promise that resolves to a Listing object, where Listing.items is a list of Entry and Link objects
 ```
 ```javascript
 w.getProfile('m__b')
@@ -235,11 +237,11 @@ w.getBadge('rocznica')
 ```
 ```javascript
 w.getHomepage({ sort: 'newest', category: null, bucket: '3hbh2jg3b', page: '3hbh2jg3b' })
-// returns a Promise that resolves to an object, where object.items is a list of Link and Entry objects
+// returns a Promise that resolves to a Listing object, where Listing.items is a list of Link and Entry objects
 ```
 ```javascript
 w.getUpcomming({ sort: 'digged', category: '3hbh2jg3b', bucket: null, page: 3 })
-// returns a Promise that resolves to an object, where object.items is a list of Link and Entry objects
+// returns a Promise that resolves to a Listing object, where Listing.items is a list of Link and Entry objects
 ```
 ```javascript
 w.getUpcommingCount({ category: null, bucket: null })
@@ -251,15 +253,15 @@ w.getLinkByURL('https://wykop.pl')
 ```
 ```javascript
 w.getHits({ sort: 'all', year: null, month: null })
-// returns a Promise that resolves to an object, where object.items is a list of Link objects
+// returns a Promise that resolves to a Listing object, where Listing.items is a list of Link objects
 ```
 ```javascript
 w.getEntryHits({ sort: 'all', year: null, month: null })
-// returns a Promise that resolves to an object, where object.items is a list of Entry objects
+// returns a Promise that resolves to a Listing object, where Listing.items is a list of Entry objects
 ```
 ```javascript
 w.getMicroblog({ sort: 'hot', lastUpdate: '12', category: null, bucket: '3hbh2jg3b', page: '10' })
-// returns a Promise that resolves to an object, where object.items is a list of Entry objects
+// returns a Promise that resolves to a Listing object, where Listing.items is a list of Entry objects
 ```
 ```javascript
 w.getNewerEntriesCount({ lastId: '1234', category: '3hbh2jg3b' })
@@ -267,15 +269,15 @@ w.getNewerEntriesCount({ lastId: '1234', category: '3hbh2jg3b' })
 ```
 ```javascript
 w.getFavoriteContent({ sort: 'oldest', type: 'entry', page: null })
-// returns a Promise that resolves to an object, where object.items is a list of Link and/or Entry objects
+// returns a Promise that resolves to a Listing object, where Listing.items is a list of Link and Entry objects
 ```
 ```javascript
 w.getObservedContent({ page: null })
-// returns a Promise that resolves to an object, where object.items is a list of Link and/or Entry objects
+// returns a Promise that resolves to a Listing object, where Listing.items is a list of Link and Entry objects
 ```
 ```javascript
 w.getObservedUsersContent({ page: 4 })
-// returns a Promise that resolves to an object, where object.items is a list of Link and Entry objects
+// returns a Promise that resolves to a Listing object, where Listing.items is a list of Link and Entry objects
 ```
 ```javascript
 w.getNewerObservedUsersContentCount({ date: w.formatDate(new Date), lastId: null })
@@ -283,28 +285,28 @@ w.getNewerObservedUsersContentCount({ date: w.formatDate(new Date), lastId: null
 ```
 ```javascript
 w.getObservedTagsContent({ page: null })
-// returns a Promise that resolves to an object, where object.items is a list of Link and Entry objects
+// returns a Promise that resolves to a Listing object, where Listing.items is a list of Link and Entry objects
 ```
 ```javascript
 w.getAutocompleteSuggestionsForTag('wyko')
-// returns a Promise that resolves to an object, where object.items is a list of Tag objects
+// returns a Promise that resolves to a Listing object, where Listing.items is a list of Tag objects
 ```
 ```javascript
 w.getAutocompleteSuggestionsForUser('wyko')
-// returns a Promise that resolves to an object, where object.items is a list of Profile objects
+// returns a Promise that resolves to a Listing object, where Listing.items is a list of Profile objects
 ```
 ```javascript
 w.getPopularTags()
-// returns a Promise that resolves to an object, where object.items is a list of Tag objects
+// returns a Promise that resolves to a Listing object, where Listing.items is a list of Tag objects
 ```
 ```javascript
 w.getPopularAuthoredTags()
-// returns a Promise that resolves to an object, where object.items is a list of Tag objects
+// returns a Promise that resolves to a Listing object, where Listing.items is a list of Tag objects
 ```
 ```javascript
 w.getSearchContent('wykop api', { type: 'all', sort: null, votes: null, dateFrom: w.formatDate(new Date), dateTo: null, tags: null, users: null, category: null, bucket: null, domains: null, page: null })
 // type === 'all' -> returns an object, where object.links.items is a list of Link objects, object.entries.items is a list of Entry objects and object.users.items is a list of Profile objects
-// type !== 'all' -> returns an object, where object.items is a list of either Link, Entry or Profile objects
+// type !== 'all' -> returns a Listing object, where Listing.items is a list of either Link, Entry or Profile objects
 ```
 ```javascript
 w.getNotificationStatus()
@@ -312,7 +314,7 @@ w.getNotificationStatus()
 ```
 ```javascript
 w.getPersonalNotifications({ page: 2 })
-// returns a Promise that resolves to an object, where object.items is a list of PersonalNotification objects
+// returns a Promise that resolves to a Listing object, where Listing.items is a list of PersonalNotification objects
 ```
 ```javascript
 w.markPersonalNotificationsAsRead()
@@ -324,7 +326,7 @@ w.removePersonalNotifications()
 ```
 ```javascript
 w.getTagNotifications({ page: '2' })
-// returns a Promise that resolves to an object, where object.items is a list of TagNotification objects
+// returns a Promise that resolves to a Listing object, where Listing.items is a list of TagNotification objects
 ```
 ```javascript
 w.markTagNotificationsAsRead()
@@ -336,7 +338,7 @@ w.removeTagNotifications()
 ```
 ```javascript
 w.getPMNotifications({ page: null })
-// returns a Promise that resolves to an object, where object.items is a list of PmNotification objects
+// returns a Promise that resolves to a Listing object, where Listing.items is a list of PmNotification objects
 ```
 ```javascript
 w.markPmNotificationsAsRead()
@@ -356,7 +358,7 @@ w.markAllConversationsAsRead()
 ```
 ```javascript
 w.getConversations({ 'wyko' })
-// returns a Promise that resolves to an object, where object.items is a list of Conversation objects
+// returns a Promise that resolves to a Listing object, where Listing.items is a list of Conversation objects
 ```
 ```javascript
 w.getCategories()
@@ -368,7 +370,7 @@ w.getUserCategory('3hbh2jg3b')
 ```
 ```javascript
 w.getUserCategories()
-// returns a Promise that resolves to an object, where object.items is a list of Bucket objects
+// returns a Promise that resolves to a Listing object, where Listing.items is a list of Bucket objects
 ```
 ```javascript
 w.getUserCategoryStatus()
@@ -380,15 +382,15 @@ w.addUserCategory({ title: 'Moja pierwsza kategoria', query: '#wykop @wykop', de
 ```
 ```javascript
 w.getUserCategoryContentPreview('#wykop @wykop')
-// returns a Promise that resolves to an object, where object.items is a list of Link and Entry objects
+// returns a Promise that resolves to a Listing object, where Listing.items is a list of Link and Entry objects
 ```
 ```javascript
 w.getBadges()
-// returns a Promise that resolves to an object, where object.items is a list of Badge objects
+// returns a Promise that resolves to a Listing object, where Listing.items is a list of Badge objects
 ```
 ```javascript
 w.getRanking({ page: 10 })
-// returns a Promise that resolves to an object, where object.items is a list of Profile objects
+// returns a Promise that resolves to a Listing object, where Listing.items is a list of Profile objects
 ```
 ```javascript
 w.getMyRank()
@@ -515,8 +517,8 @@ w.requestAccountDataTransfer()
 // returns a Promise that resolves to an empty string OR an object with a token in case the user has 2FA turned on
 ```
 ```javascript
-w.get2FAStatus()
-// returns a Promise that resolves to a Bool
+w.is2FAEnabled()
+// returns a Promise that resolves to a boolean
 ```
 ```javascript
 w.get2FASecret({ type: '1' })
@@ -538,23 +540,23 @@ w.handle2FACodeRequired(async ({ type, token }) => {
 ```
 ```javascript
 w.getUserSessions()
-// returns a Promise that resolves to null
+// returns a Promise that resolves to a Listing object, where Listing.items is a list of objects
 ```
 ```javascript
 w.removeUserSession('12341234')
-// returns a Promise that resolves to an object, where object.items is a list of Profile objects
-```
-```javascript
-w.getConnectApplications()
 // returns a Promise that resolves to null
 ```
 ```javascript
-w.removeConnectApplication('12341234')
-// returns a Promise that resolves to an object, where object.items is a list of Profile objects
+w.getConnectApplications()
+// returns a Promise that resolves to a Listing object, where Listing.items is a list of objects
 ```
 ```javascript
-w.getBlacklistUsers()
-// returns a Promise that resolves to an object, where object.items is a list of Profile objects
+w.removeConnectApplication('12341234')
+// returns a Promise that resolves to null
+```
+```javascript
+w.getBlacklistedUsers()
+// returns a Promise that resolves to a Listing object, where Listing.items is a list of Profile objects
 ```
 ```javascript
 w.addUserToBlacklist()
@@ -566,7 +568,7 @@ w.removeUserFromBlacklist()
 ```
 ```javascript
 w.getBlacklistTags()
-// returns a Promise that resolves to an object, where object.items is a list of Tag objects
+// returns a Promise that resolves to a Listing object, where Listing.items is a list of Tag objects
 ```
 ```javascript
 w.addTagToBlacklist()
@@ -578,7 +580,7 @@ w.removeTagFromBlacklist()
 ```
 ```javascript
 w.getBlacklistDomains()
-// returns a Promise that resolves to an object, where object.items is a list of objects
+// returns a Promise that resolves to a Listing object, where Listing.items is a list of objects
 ```
 ```javascript
 w.addDomainToBlacklist()
@@ -590,7 +592,7 @@ w.removeDomainFromBlacklist()
 ```
 ```javascript
 w.getAccountColorHexes()
-// returns a Promise that resolves to an object
+// returns a Promise that resolves to a Listing object, where Listing.items is a list of objects
 ```
 ```javascript
 w.getAccountColorHex('orange')
@@ -598,15 +600,15 @@ w.getAccountColorHex('orange')
 ```
 ```javascript
 w.submitSupportMessage({ reason: w.supportReasons.technicalProblems, email: 'email@example.com', message: 'Please help!', file: null, info: null, url: null })
-// returns a Promise that resolves to empty string
+// returns a Promise that resolves to the Wykop object
 ```
 ```javascript
 w.submitGDPRMessage({ 'email@example.com', message: 'Please help with my data!' })
-// returns a Promise that resolves to empty string
+// returns a Promise that resolves to the Wykop object
 ```
 ```javascript
 w.getReportedContent({ page: 2 })
-// returns a Promise that resolves to an object
+// returns a Promise that resolves to a Listing object, where Listing.items is a list of objects
 ```
 ```javascript
 w.generateReportURL({ linkId: '1234', entryId: null, linkCommentId: null, entryCommentId: null, profile: null, relatedId: null })
@@ -614,20 +616,20 @@ w.generateReportURL({ linkId: '1234', entryId: null, linkCommentId: null, entryC
 ```
 ```javascript
 w.getModeratedContent({ page: null })
-// returns a Promise that resolves to an object
+// returns a Promise that resolves to a Listing object, where Listing.items is a list of objects
 ```
 ```javascript
 w.submitAppeal({ reportId: '1234', content: 'This should not have been deleted!' })
-// returns a Promise that resolves to empty string?
+// returns a Promise that resolves to the Wykop object
 ```
 ```javascript
 w.getAppeals({ page: 5 })
-// returns a Promise that resolves to an object
+// returns a Promise that resolves to a Listing object, where Listing.items is a list of objects
 ```
 ```javascript
 w.customRequest({ method: 'GET', url: '/entries/1234' })
 // this method takes a standard Axios Request: https://axios-http.com/docs/req_config
-// returns a Promise that to a standard Axios Response: https://axios-http.com/docs/res_schema
+// returns a Promise that resolves to a standard Axios Response: https://axios-http.com/docs/res_schema
 ```
 ```javascript
 w.getToken()
@@ -635,11 +637,11 @@ w.getToken()
 ```
 ```javascript
 w.formatDate(new Date())
-// returns a Promise that resolves to a date formatted to be accepted by the Wykop API
+// returns a Promise that resolves to a date formatted to be generally accepted by the Wykop API
 ```
 ```javascript
-w.saveConnectTokens({ token: '3hbh2jg3b', rtoken: '3hbh2jg3b', redirect_url: 'https://wykop.pl/?token=3hbh2jg3b&rtoken=3hbh2jg3b' })
-// returns a Promise that resolves to an object with a token and rtoken
+w.saveConnectTokens({ token: '3hbh2jg3b', rtoken: '3hbh2jg3b' })
+// returns a Promise that resolves to an object with the token and rtoken
 ```
 ```javascript
 w.databaseExtract()
@@ -651,7 +653,7 @@ w.tokenExpireDate()
 ```
 ```javascript
 w.hasTokenExpired()
-// returns a Promise that resolves to a Bool
+// returns a Promise that resolves to a boolean
 ```
 ```javascript
 w.getLoggedUsername()
@@ -659,7 +661,7 @@ w.getLoggedUsername()
 ```
 ```javascript
 w.isLogged()
-// returns a Promise that resolves to a Bool
+// returns a Promise that resolves to a boolean
 ```
 
 ### Available functions on `Entry` objects:
@@ -674,7 +676,7 @@ entry.getComment('4321')
 ```
 ```javascript
 entry.getComments()
-// returns a Promise that resolves to an object, where object.items is a list of EntryComment objects
+// returns a Promise that resolves to a Listing object, where Listing.items is a list of EntryComment objects
 ```
 ```javascript
 entry.getNewerCommentsCount({ date: w.formatDate(new Date) })
@@ -694,7 +696,7 @@ entry.remove()
 ```
 ```javascript
 entry.getUpvoters()
-// returns a Promise that resolves to an object, where object.items is a list of Profile objects
+// returns a Promise that resolves to a Listing object, where Listing.items is a list of Profile objects
 ```
 ```javascript
 entry.upvote()
@@ -733,7 +735,7 @@ comment.remove()
 ```
 ```javascript
 comment.getUpvoters()
-// returns a Promise that resolves to an object, where object.items is a list of Profile objects
+// returns a Promise that resolves to a Listing object, where Listing.items is a list of Profile objects
 ```
 ```javascript
 comment.upvote()
@@ -767,15 +769,15 @@ link.submitComment({ content: 'Nice link!', photo: '3hbh2jg3b', embed: '3hbh2jg3
 ```
 ```javascript
 link.getComments({ page, sort, ama })
-// returns a Promise that resolves to an object, where object.items is a list of LinkComment objects
+// returns a Promise that resolves to a Listing object, where Listing.items is a list of LinkComment objects
 ```
 ```javascript
 link.getRelatedLinks()
-// returns a Promise that resolves to an object, where object.items is a list of Related objects
+// returns a Promise that resolves to a Listing object, where Listing.items is a list of LinkRelated objects
 ```
 ```javascript
 link.submitRelatedLink({ title, url, adult })
-// returns a Promise that resolves to a Related object
+// returns a Promise that resolves to a LinkRelated object
 ```
 ```javascript
 link.edit({ title: 'Hello again :)', description: 'Something interesting!', tags: ['heheszki', 'polityka'], photo: null, adult: true })
@@ -815,11 +817,11 @@ link.finishAMA()
 ```
 ```javascript
 link.getUpvotes()
-// returns a Promise that resolves to an object, where object.items is an object, where object.items[0].user is a Profile object
+// returns a Promise that resolves to a Listing object, where Listing.items is a list of objects
 ```
 ```javascript
 link.getDownvotes()
-// returns a Promise that resolves to an object, where object.items is an object, where object.items[0].user is a Profile object
+// returns a Promise that resolves to a Listing object, where Listing.items is a list of objects
 ```
 ```javascript
 link.getCounters()
@@ -837,7 +839,7 @@ comment.get()
 ```
 ```javascript
 comment.getComments({ page: null })
-// returns a Promise that resolves to an object, where objects.items is a list of LinkComment objects
+// returns a Promise that resolves to a Listing object, where Listing.items is a list of LinkComment objects
 ```
 ```javascript
 comment.submitComment({ content: 'Nice link!', photo: '3hbh2jg3b', embed: '3hbh2jg3b', adult: true })
@@ -948,11 +950,11 @@ conversation.message('Hello!', { photo: '3hbh2jg3b', embed: '3hbh2jg3b' })
 ```
 ```javascript
 conversation.clearHistory()
-// returns a Promise that resolves to an empty string
+// returns a Promise that resolves to the Conversation object
 ```
 ```javascript
 conversation.isNewerMessageAvailable()
-// returns a Promise that resolves to a Bool
+// returns a Promise that resolves to a boolean
 ```
 
 ### Available functions on `Profile` objects:
@@ -961,68 +963,60 @@ profile.get()
 // returns a Promise that resolves to a Profile object - you can use this to refresh
 ```
 ```javascript
-profile.observe()
-// returns a Promise that resolves to the Profile object
-```
-```javascript
-profile.unobserve()
-// returns a Promise that resolves to the Profile object
-```
-```javascript
 profile.getActions({ page: null })
-// returns a Promise that resolves to an object, where object.items is a list of Link and Entry objects
+// returns a Promise that resolves to a Listing object, where Listing.items is a list of Link and Entry objects
 ```
 ```javascript
 profile.getLinksAdded({ page: null })
-// returns a Promise that resolves to an object, where object.items is a list of Link objects
+// returns a Promise that resolves to a Listing object, where Listing.items is a list of Link objects
 ```
 ```javascript
 profile.getLinksPublished({ page: null })
-// returns a Promise that resolves to an object, where object.items is a list of Link objects
+// returns a Promise that resolves to a Listing object, where Listing.items is a list of Link objects
 ```
 ```javascript
 profile.getLinksUpvoted({ page: null })
-// returns a Promise that resolves to an object, where object.items is a list of Link objects
+// returns a Promise that resolves to a Listing object, where Listing.items is a list of Link objects
 ```
 ```javascript
 profile.getLinksDownvoted({ page: null })
-// returns a Promise that resolves to an object, where object.items is a list of Link objects
+// returns a Promise that resolves to a Listing object, where Listing.items is a list of Link objects
 ```
 ```javascript
 profile.getLinksCommented({ page: null })
-// returns a Promise that resolves to an object, where object.items is a list of Link objects
+// returns a Promise that resolves to a Listing object, where Listing.items is a list of Link objects
 ```
 ```javascript
 profile.getEntriesAdded({ page: null })
-// returns a Promise that resolves to an object, where object.items is a list of Entry objects
+// returns a Promise that resolves to a Listing object, where Listing.items is a list of Entry objects
 ```
 ```javascript
 profile.getEntriesUpvoted({ page: null })
-// returns a Promise that resolves to an object, where object.items is a list of Entry objects
+// returns a Promise that resolves to a Listing object, where Listing.items is a list of Entry objects
 ```
 ```javascript
 profile.getEntriesCommented({ page: null })
-// returns a Promise that resolves to an object, where object.items is a list of Entry objects
+// returns a Promise that resolves to a Listing object, where Listing.items is a list of Entry objects
 ```
 ```javascript
 profile.getBadges()
-// returns a Promise that resolves to an object, where object.items is a list of Badge objects
+// returns a Promise that resolves to a Listing object, where Listing.items is a list of Badge objects
 ```
 ```javascript
 profile.getAuthoredTags()
-// returns a Promise that resolves to an object, where object.items is a list of Tag objects
+// returns a Promise that resolves to a Listing object, where Listing.items is a list of Tag objects
 ```
 ```javascript
 profile.getFollowedTags({ page: null})
-// returns a Promise that resolves to an object, where object.items is a list of Tag objects
+// returns a Promise that resolves to a Listing object, where Listing.items is a list of Tag objects
 ```
 ```javascript
 profile.getFollowedUsers({ page: null })
-// returns a Promise that resolves to an object, where object.items is a list of Profile objects
+// returns a Promise that resolves to a Listing object, where Listing.items is a list of Profile objects
 ```
 ```javascript
 profile.getFollowers({ page: null })
-// returns a Promise that resolves to an object, where object.items is a list of Profile objects
+// returns a Promise that resolves to a Listing object, where Listing.items is a list of Profile objects
 ```
 ```javascript
 profile.getNote()
@@ -1040,6 +1034,22 @@ profile.clearNote()
 profile.getConversation()
 // returns a Promise that resolves to a Conversation object
 ```
+```javascript
+profile.observe()
+// returns a Promise that resolves to the Profile object
+```
+```javascript
+profile.unobserve()
+// returns a Promise that resolves to the Profile object
+```
+```javascript
+profile.blacklist()
+// returns a Promise that resolves to the Profile object
+```
+```javascript
+profile.unblacklist()
+// returns a Promise that resolves to the Profile object
+```
 
 ### Available functions on `Tag` objects:
 ```javascript
@@ -1048,19 +1058,19 @@ tag.get()
 ```
 ```javascript
 tag.getContent({ page: null, sort: 'newest', type: 'all', year: null, month: null })
-// returns a Promise that resolves to an object, where object.items is a list of Link and Entry objects
+// returns a Promise that resolves to a Listing object, where Listing.items is a list of Link and Entry objects
 ```
 ```javascript
 tag.getNewerContent({ sort: 'newest', type: 'entry', date: null, lastId: '1234' })
-// returns a Promise that resolves to an object, where object.items is a list of Link and Entry objects
+// returns a Promise that resolves to a Listing object, where Listing.items is a list of Link and Entry objects
 ```
 ```javascript
 tag.getRelatedTags()
-// returns a Promise that resolves to an object, where object.items is a list of Tag objects
+// returns a Promise that resolves to a Listing object, where Listing.items is a list of Tag objects
 ```
 ```javascript
 tag.getAuthors()
-// returns a Promise that resolves to an object, where object.items is a list of Profile objects
+// returns a Promise that resolves to a Listing object, where Listing.items is a list of Profile objects
 ```
 ```javascript
 tag.addAuthor({ username: 'wykop' }) 
@@ -1090,6 +1100,14 @@ tag.notify()
 tag.mute()
 // returns a Promise that resolves to the Tag object
 ```
+```javascript
+tag.blacklist()
+// returns a Promise that resolves to the Tag object
+```
+```javascript
+tag.unblacklist()
+// returns a Promise that resolves to the Tag object
+```
 
 ### Available functions on `Badge` objects:
 ```javascript
@@ -1098,7 +1116,7 @@ badge.get()
 ```
 ```javascript
 badge.getUsers()
-// returns a Promise that resolves to an object, where object.items is a list of Profile objects
+// returns a Promise that resolves to a Listing object, where Listing.items is a list of Profile objects
 ```
 
 ### Available functions on `Bucket` objects:
@@ -1108,7 +1126,7 @@ bucket.get()
 ```
 ```javascript
 bucket.getContent({ page: null })
-// returns a Promise that resolves to an object, where object.items is a list of Link and Entry objects
+// returns a Promise that resolves to a Listing object, where Listing.items is a list of Link and Entry objects
 ```
 ```javascript
 bucket.edit({ title: 'New title!', query: '#tags @users keywords', defaultPage: 'entries' })
@@ -1169,7 +1187,25 @@ settings.removeBackground()
 // returns a Promise that resolves to the ProfileSettings object
 ```
 
+### Available functions on `Listing` objects:
+```javascript
+listing.stream()
+// returns a Promise that resolves to an AsyncGeneratorFunction that yields items from the current page and all sequential pages
+```
 
+### Available functions on `Pagination` objects:
+```javascript
+pagination.get()
+// returns a Promise that resolves to a Listing object - you can use this to refresh
+```
+```javascript
+pagination.next()
+// returns a Promise that resolves to a Listing object
+```
+```javascript
+pagination.prev()
+// returns a Promise that resolves to a Listing object
+```
 
 
 
