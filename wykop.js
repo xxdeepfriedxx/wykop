@@ -85,7 +85,7 @@ module.exports = class Wykop extends API {
 		return this.wrapContent('badge', { slug: slug });
 	};
 
-	userCategory = async function(hash) {
+	bucket = async function(hash) {
 		assert(hash, this.#errors.assert.notSpecified('hash'));
 		return this.wrapContent('bucket', { hash: hash });
 	};
@@ -555,19 +555,19 @@ module.exports = class Wykop extends API {
 		return this.wrapListing('none', this.#instance.get('/categories'));
 	};
 
-	getUserCategory = async function(hash) {
-		return this.userCategory(hash).then(res => res.get());
+	getBucket = async function(hash) {
+		return this.Bucket(hash).then(res => res.get());
 	};
 
-	getUserCategories = async function() {
+	getBuckets = async function() {
 		return this.wrapListing('bucket', this.#instance.get('/buckets'));
 	};
 
-	getUserCategoryStatus = async function() {
+	getBucketStatus = async function() {
 		return this.wrapListing('bucket', this.#instance.get('/buckets/status'));
 	};
 
-	addUserCategory = async function({ title = null, query = null, defaultPage = 'home' } = {}) {
+	addBucket = async function({ title = null, query = null, defaultPage = 'home' } = {}) {
 		assert(title, this.#errors.assert.notSpecified('title'));
 		assert(query, this.#errors.assert.notSpecified('query'));
 		assert(['home', 'upcoming', 'entries'].includes(defaultPage), this.#errors.assert.invalidValue('defaultPage', 'home, upcoming, entries'));
@@ -580,7 +580,7 @@ module.exports = class Wykop extends API {
 		}));
 	};
 
-	getUserCategoryContentPreview = async function(query) {
+	getBucketContentPreview = async function(query) {
 		assert(query, this.#errors.assert.notSpecified('query'));
 		return this.wrapListingMixed(this.#instance.get('/buckets/search', {
 			data: {

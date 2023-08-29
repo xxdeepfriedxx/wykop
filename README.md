@@ -139,7 +139,7 @@ w.badge('3hbh2jg3b')
 // returns an empty Badge object that can be used to access its class functions
 ```
 ```javascript
-w.userCategory('3hbh2jg3b')
+w.bucket('3hbh2jg3b')
 // returns an empty Bucket object that can be used to access its class functions
 ```
 ```javascript
@@ -212,11 +212,11 @@ w.getConversation('wykop')
 // returns a Promise that resolves to a Conversation object
 ```
 ```javascript
-w.getTag = function(tag, config) {
+w.getTag('heheszki')
 // returns a Promise that resolves to a Tag object
 ```
 ```javascript
-w.getTagContent = function(tag, config) {
+w.getTagContent('heheszki', { sort: 'best' })
 // returns a Promise that resolves to a Listing object, where Listing.items is a list of Entry and Link objects
 ```
 ```javascript
@@ -245,7 +245,7 @@ w.getUpcomming({ sort: 'digged', category: '3hbh2jg3b', bucket: null, page: 3 })
 ```
 ```javascript
 w.getUpcommingCount({ category: null, bucket: null })
-// returns a Promise that resolves to a number
+// returns a Promise that resolves to a string
 ```
 ```javascript
 w.getLinkByURL('https://wykop.pl')
@@ -281,7 +281,7 @@ w.getObservedUsersContent({ page: 4 })
 ```
 ```javascript
 w.getNewerObservedUsersContentCount({ date: w.formatDate(new Date), lastId: null })
-// returns a Promise that resolves to a number
+// returns a Promise that resolves to a string
 ```
 ```javascript
 w.getObservedTagsContent({ page: null })
@@ -365,7 +365,7 @@ w.getCategories()
 // returns a Promise that resolves to an object
 ```
 ```javascript
-w.getUserCategory('3hbh2jg3b')
+w.getBucket('3hbh2jg3b')
 // returns a Promise that resolves to a Bucket object
 ```
 ```javascript
@@ -373,15 +373,15 @@ w.getUserCategories()
 // returns a Promise that resolves to a Listing object, where Listing.items is a list of Bucket objects
 ```
 ```javascript
-w.getUserCategoryStatus()
+w.getBucketStatus()
 // returns a Promise that resolves to an object
 ```
 ```javascript
-w.addUserCategory({ title: 'Moja pierwsza kategoria', query: '#wykop @wykop', defaultPage: 'home' })
+w.addBucket({ title: 'My first category', query: '#wykop @wykop', defaultPage: 'home' })
 // returns a Promise that resolves to a Bucket object
 ```
 ```javascript
-w.getUserCategoryContentPreview('#wykop @wykop')
+w.getBucketContentPreview('#wykop @wykop')
 // returns a Promise that resolves to a Listing object, where Listing.items is a list of Link and Entry objects
 ```
 ```javascript
@@ -567,7 +567,7 @@ w.removeUserFromBlacklist()
 // returns a Promise that resolves to the Wykop object
 ```
 ```javascript
-w.getBlacklistTags()
+w.getBlacklistedTags()
 // returns a Promise that resolves to a Listing object, where Listing.items is a list of Tag objects
 ```
 ```javascript
@@ -579,7 +579,7 @@ w.removeTagFromBlacklist()
 // returns a Promise that resolves to the Wykop object
 ```
 ```javascript
-w.getBlacklistDomains()
+w.getBlacklistedDomains()
 // returns a Promise that resolves to a Listing object, where Listing.items is a list of objects
 ```
 ```javascript
@@ -1061,8 +1061,8 @@ tag.getContent({ page: null, sort: 'newest', type: 'all', year: null, month: nul
 // returns a Promise that resolves to a Listing object, where Listing.items is a list of Link and Entry objects
 ```
 ```javascript
-tag.getNewerContent({ sort: 'newest', type: 'entry', date: null, lastId: '1234' })
-// returns a Promise that resolves to a Listing object, where Listing.items is a list of Link and Entry objects
+tag.getNewerContentCount({ sort: 'newest', type: 'entry', date: '2021-01-01 10:11:12', lastId: null })
+// returns a Promise that resolves to a string
 ```
 ```javascript
 tag.getRelatedTags()
