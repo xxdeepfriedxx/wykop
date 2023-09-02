@@ -1069,15 +1069,15 @@ tag.getRelatedTags()
 // returns a Promise that resolves to a Listing object, where Listing.items is a list of Tag objects
 ```
 ```javascript
-tag.getAuthors()
+tag.getCoauthors()
 // returns a Promise that resolves to a Listing object, where Listing.items is a list of Profile objects
 ```
 ```javascript
-tag.addAuthor({ username: 'wykop' }) 
+tag.addCoauthor({ username: 'wykop' }) 
 // returns a Promise that resolves to the Tag object
 ```
 ```javascript
-tag.removeAuthor({ username: 'm__b' }) 
+tag.removeCoauthor({ username: 'm__b' }) 
 // returns a Promise that resolves to the Tag object
 ```
 ```javascript
