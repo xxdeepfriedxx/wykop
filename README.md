@@ -648,7 +648,7 @@ w.databaseExtract()
 // returns a Promise that resolves to an object with the current config - you can use this before closing your app to save the config for upcoming instances, so you don't need to provide a new rtoken/token every time. When using an appkey and secret, this is not necessary 
 ```
 ```javascript
-w.tokenExpireDate()
+w.getTokenExpireDate()
 // returns a Promise that resolves to a Date object
 ```
 ```javascript

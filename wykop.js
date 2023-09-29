@@ -20,7 +20,7 @@ module.exports = class Wykop extends API {
 		super(core); this.#core = core; this.#instance = core.instance; this.#errors = core.errors; this.#database = core.database;
 
 		if (typeof Proxy === 'undefined') { proxies = false; }
-		core.useProxies = proxies;
+		this.#core.useProxies = proxies;
 
 		if (proxies) { return proxymise(this); }
 		return this;
@@ -1174,7 +1174,7 @@ module.exports = class Wykop extends API {
 		return JSON.parse(Buffer.from(this.#database.token.split('.')[1], 'base64').toString('binary'));
 	}
 
-	tokenExpireDate = async function() {
+	getTokenExpireDate = async function() {
 		return new Date((this.#tokenData?.exp ?? 0) * 1000);
 	};
 
