@@ -454,15 +454,15 @@ module.exports = class Wykop extends API {
 		if (page) { params.page = page; }
 
 		let stringParams = '';
-		if (dateFrom) { 
+		if (dateFrom) {
 			dateFrom.setHours(2,0,0);
-			stringParams += `date_from=${this.formatDate(dateFrom)}`;
+			stringParams += `date_from=${await this.formatDate(dateFrom)}`;
 		}
 		
-		if (dateTo) { 
+		if (dateTo) {
 			dateTo.setHours(25,59,59);
 			if (stringParams.length) { stringParams += '&'; }
-			stringParams += `date_to=${this.formatDate(dateTo)}`;
+			stringParams += `date_to=${await this.formatDate(dateTo)}`;
 		}
 
 		if (type === 'all') {
