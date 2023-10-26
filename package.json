@@ -1,6 +1,6 @@
 {
   "name": "wykop",
-  "version": "1.1.14",
+  "version": "1.1.15",
   "description": "Wrapper for the new Wykop API v3 written in NodeJS",
   "homepage": "https://github.com/xxdeepfriedxx/wykop",
   "repository": "https://github.com/xxdeepfriedxx/wykop",
