@@ -469,9 +469,9 @@ module.exports = class Wykop extends API {
 			return this.wrapContent('none', this.#instance.get('/search/' + type + (stringParams.length ? `?${stringParams}` : ''), { 
 				params: params
 			})).then(async res => {
-				if (res.links.items) { res.links.items = this.wrapListing('link', res.links.items); }
-				if (res.entries.items) { res.entries.items = this.wrapListing('entry', res.entries.items); }
-				if (res.users.items) { res.users.items = this.wrapListing('profile', res.users.items); }
+				if (res.links) { res.links = this.wrapListing('link', res.links); }
+				if (res.entries) { res.entries = this.wrapListing('entry', res.entries); }
+				if (res.users) { res.users = this.wrapListing('profile', res.users); }
 				return res;
 			});
 		}
