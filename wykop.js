@@ -365,7 +365,7 @@ module.exports = class Wykop extends API {
 		assert(['newest', 'oldest', null].includes(sort), this.#errors.assert.invalidValue('sort', 'newest, oldest'));
 		assert(['link', 'entry', 'link_comment', 'entry_comment', null].includes(type), this.#errors.assert.invalidValue('type', 'link, entry, link_comment, entry_comment'));
 		return this.wrapListingMixed(this.#instance.get('/favourites', {
-			data: {
+			params: {
 				sort: sort,
 				resource: type,
 				page: page
