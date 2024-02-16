@@ -148,7 +148,7 @@ module.exports = class Wykop extends API {
 	};
 
 	createPhoto = async function({ type = null, url = null } = {}) {
-		assert(['settings', 'comments', 'links'].includes(type), this.#errors.assert.invalidValue('type', '"settings", "comments" (also used for entries), "links"'));
+		assert(['settings', 'comments', 'links', 'content'].includes(type), this.#errors.assert.invalidValue('type', '"settings", "comments" (also used for entries), "links", "content"'));
 		assert(url, this.#errors.assert.notSpecified('url'));
 		return this.wrapContent('none', this.#instance.post('/media/photos', {
 			data: {
@@ -162,7 +162,7 @@ module.exports = class Wykop extends API {
 	};
 
 	uploadPhoto = async function({ type = null, file = null, fileName = null } = {}) {
-		assert(['settings', 'comments', 'links'].includes(type), this.#errors.assert.invalidValue('type', '"settings", "comments" (also used for entries), "links"'));
+		assert(['settings', 'comments', 'links', 'content'].includes(type), this.#errors.assert.invalidValue('type', '"settings", "comments" (also used for entries), "links", "content"'));
 		assert(file, this.#errors.assert.notSpecified('file'));
 
 		const form = new FormData();
@@ -172,6 +172,11 @@ module.exports = class Wykop extends API {
 				type: type,
 			}
 		}));
+	};
+
+	removePhoto = async function(key) {
+		assert(key, this.#errors.assert.notSpecified('key'));
+		return this.wrapContent('none', this.#instance.delete('/media/photos/' + key));
 	};
 
 	getLink = async function(id) {

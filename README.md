@@ -155,7 +155,7 @@ w.submitEntry({ content: 'Hello World!', photo: '3hbh2jg3b', embed: '3hbh2jg3b',
 // returns a Promise that resolves to an Entry object
 ```
 ```javascript
-w.submitEntryComment({ entryId: '1234', content: 'Hello again!', photo: '3hbh2jg3b', embed: '3hbh2jg3b', survey: '3hbh2jg3b', adult: false })
+w.submitEntryComment({ entryId: '1234', content: 'Hello again!', photo: '3hbh2jg3b', embed: '3hbh2jg3b', adult: false })
 // returns a Promise that resolves to an EntryComment object
 ```
 ```javascript
@@ -173,6 +173,10 @@ w.createPhoto({ type: 'comments', url: 'https://cataas.com/cat/says/hello%20worl
 ```javascript
 w.uploadPhoto({ type: 'links', file: await Buffer.from(image.data, 'binary'), fileName: 'wykop-js-image' })
 // returns a Promise that resolves to an object, where object.key is the photo 'id'
+```
+```javascript
+w.removePhoto('3hbh2jg3b')
+// returns a Promise that resolves to an empty string
 ```
 ```javascript
 w.getLink('1234')
