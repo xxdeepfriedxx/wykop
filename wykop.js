@@ -816,8 +816,7 @@ module.exports = class Wykop extends API {
 	submitOnboardingTags = async function(tags) {
 		assert(Array.isArray(tags) && tags.every(tag => typeof tag === 'string'), this.#errors.assert.invalidType('tags', 'string[]'));
 		return this.wrapListing('none', this.#instance.put('/users/onboarding/tags', {
-			avatar: avatar,
-			gender: gender
+			tags: tags
 		}));
 	};
 
