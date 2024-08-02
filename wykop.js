@@ -413,6 +413,14 @@ module.exports = class Wykop extends API {
 		}));
 	};
 
+	getObservedDiscussionsContent = async function({ page = null } = {}) {
+		return this.wrapListingMixed(this.#instance.get('/observed/discussions', {
+			params: {
+				page: page
+			}
+		}));
+	};
+
 	getAutocompleteSuggestionsForTag = async function(query) {
 		assert(query, this.#errors.assert.notSpecified('query'));
 		return this.wrapListing('tag', this.#instance.get('/tags/autocomplete', {
@@ -523,6 +531,22 @@ module.exports = class Wykop extends API {
 		return this.wrapContent('none', this.#instance.delete('/notifications/tags/all'));
 	};
 
+	getDiscussionNotifications = async function({ page } = {}) {
+		return this.wrapListing('notification_discussion', this.#instance.get('/notifications/observed-discussions', {
+			params: {
+				page: page
+			}
+		}));
+	};
+
+	markDiscussionNotificationsAsRead = async function() {
+		return this.wrapContent('none', this.#instance.put('/notifications/observed-discussions/all'));
+	};
+
+	removeDiscussionNotifications = async function() {
+		return this.wrapContent('none', this.#instance.delete('/notifications/observed-discussions/all'));
+	};
+
 	getPMNotifications = async function({ page } = {}) {
 		return this.wrapListing('notification_pm', this.#instance.get('/notifications/pm', {
 			params: {
@@ -561,7 +585,7 @@ module.exports = class Wykop extends API {
 	};
 
 	getBucket = async function(hash) {
-		return this.Bucket(hash).then(res => res.get());
+		return this.wrapContent('bucket', { hash: hash }).get();
 	};
 
 	getBuckets = async function() {
@@ -761,6 +785,40 @@ module.exports = class Wykop extends API {
 				rtoken: res.redirect_url.match(/(?:rtoken=)([\w.-]+)/)[1]
 			};
 		});
+	};
+
+	// === Global messages ===
+	getGlobalMessages = async function() {
+		return this.wrapListing('none', this.#instance.get('/global-messages'));
+	};
+
+	markGlobalMessageAsRead = async function(id) {
+		assert(id, this.#errors.assert.notSpecified('id'));
+		return this.wrapListing('none', this.#instance.post('/global-messages/' + id));
+	};
+
+	// === Onboarding ===
+	getOnboardingProfile = async function() {
+		return this.wrapListing('none', this.#instance.get('/users/onboarding/profile'));
+	};
+
+	submitOnboardingProfile = async function({ avatar, gender } = {}) {
+		return this.wrapListing('none', this.#instance.put('/users/onboarding/profile', {
+			avatar: avatar,
+			gender: gender
+		}));
+	};
+
+	getOnboardingTags = async function() {
+		return this.wrapListing('none', this.#instance.get('/users/onboarding/tags'));
+	};
+
+	submitOnboardingTags = async function(tags) {
+		assert(Array.isArray(tags) && tags.every(tag => typeof tag === 'string'), this.#errors.assert.invalidType('tags', 'string[]'));
+		return this.wrapListing('none', this.#instance.put('/users/onboarding/tags', {
+			avatar: avatar,
+			gender: gender
+		}));
 	};
 
 	// === Authorize ===
@@ -984,6 +1042,10 @@ module.exports = class Wykop extends API {
 		return this.wrapContent('none', this.#instance.delete('/settings/session/' + id));
 	};
 
+	removeOtherUserSessions = async function() {
+		return this.wrapContent('none', this.#instance.delete('/settings/session/all'));
+	};
+
 	// === Wykop Connect Apps ===
 	getConnectApplications = async function() {
 		return this.wrapListing('none', this.#instance.get('/settings/applications'));
@@ -1039,11 +1101,17 @@ module.exports = class Wykop extends API {
 	};
 
 	// === Config ===
-	getAccountColorHexes = async function() {
+	getDoodle = async function() {
+		return this.wrapContent('none', this.#instance.get('/config')).then(res => {
+			return res.doodle ?? null;
+		});
+	};
+
+	getAccountColors = async function() {
 		return this.wrapListing('none', this.#instance.get('/config/colors'));
 	};
 
-	getAccountColorHex = async function(name) {
+	getAccountColor = async function(name) {
 		assert(name, this.#errors.assert.notSpecified('name'));
 		return this.wrapContent('none', this.#instance.get('/config/colors/' + name));
 	};

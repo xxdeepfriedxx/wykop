@@ -273,7 +273,7 @@ w.getNewerEntriesCount({ lastId: '1234', category: '3hbh2jg3b' })
 ```
 ```javascript
 w.getFavoriteContent({ sort: 'oldest', type: 'entry', page: null })
-// returns a Promise that resolves to a Listing object, where Listing.items is a list of Link and Entry objects
+// returns a Promise that resolves to a Listing object, where Listing.items is a list of Link, LinkComment, Entry and EntryComment objects
 ```
 ```javascript
 w.getObservedContent({ page: null })
@@ -290,6 +290,10 @@ w.getNewerObservedUsersContentCount({ date: w.formatDate(new Date), lastId: null
 ```javascript
 w.getObservedTagsContent({ page: null })
 // returns a Promise that resolves to a Listing object, where Listing.items is a list of Link and Entry objects
+```
+```javascript
+w.getObservedDiscussionsContent({ page: null })
+// returns a Promise that resolves to a Listing object, where Listing.items is a list of Link, LinkComment and Entry objects
 ```
 ```javascript
 w.getAutocompleteSuggestionsForTag('wyko')
@@ -338,6 +342,18 @@ w.markTagNotificationsAsRead()
 ```
 ```javascript
 w.removeTagNotifications()
+// returns a Promise that resolves to an empty string
+```
+```javascript
+w.getDiscussionNotifications({ page: null })
+// returns a Promise that resolves to a Listing object, where Listing.items is a list of PmNotification objects
+```
+```javascript
+w.markDiscussionNotificationsAsRead()
+// returns a Promise that resolves to an empty string
+```
+```javascript
+w.removeDiscussionNotifications()
 // returns a Promise that resolves to an empty string
 ```
 ```javascript
@@ -551,6 +567,10 @@ w.removeUserSession('12341234')
 // returns a Promise that resolves to null
 ```
 ```javascript
+w.removeOtherUserSessions()
+// returns a Promise that resolves to null
+```
+```javascript
 w.getConnectApplications()
 // returns a Promise that resolves to a Listing object, where Listing.items is a list of objects
 ```
@@ -595,11 +615,15 @@ w.removeDomainFromBlacklist()
 // returns a Promise that resolves to the Wykop object
 ```
 ```javascript
-w.getAccountColorHexes()
+w.getDoodle()
+// returns a Promise that resolves to an object
+```
+```javascript
+w.getAccountColors()
 // returns a Promise that resolves to a Listing object, where Listing.items is a list of objects
 ```
 ```javascript
-w.getAccountColorHex('orange')
+w.getAccountColor('orange')
 // returns a Promise that resolves to an object
 ```
 ```javascript
@@ -715,6 +739,14 @@ entry.favorite()
 // returns a Promise that resolves to the Entry object
 ```
 ```javascript
+entry.observe()
+// returns a Promise that resolves to the Entry object
+```
+```javascript
+entry.unobserve()
+// returns a Promise that resolves to the Entry object
+```
+```javascript
 entry.unfavorite()
 // returns a Promise that resolves to the Entry object
 ```
@@ -804,6 +836,14 @@ link.unvote()
 // returns a Promise that resolves to the Link object
 ```
 ```javascript
+link.observe()
+// returns a Promise that resolves to the Link object
+```
+```javascript
+link.unobserve()
+// returns a Promise that resolves to the Link object
+```
+```javascript
 link.favorite()
 // returns a Promise that resolves to the Link object
 ```
@@ -867,6 +907,14 @@ comment.downvote()
 ```
 ```javascript
 comment.unvote()
+// returns a Promise that resolves to the LinkComment object
+```
+```javascript
+comment.observe()
+// returns a Promise that resolves to the LinkComment object
+```
+```javascript
+comment.unobserve()
 // returns a Promise that resolves to the LinkComment object
 ```
 ```javascript
@@ -989,6 +1037,10 @@ profile.getLinksDownvoted({ page: null })
 ```javascript
 profile.getLinksCommented({ page: null })
 // returns a Promise that resolves to a Listing object, where Listing.items is a list of Link objects
+```
+```javascript
+profile.getLinksRelated({ page: null })
+// returns a Promise that resolves to a Listing object, where Listing.items is a list of LinkRelated objects
 ```
 ```javascript
 profile.getEntriesAdded({ page: null })
@@ -1141,7 +1193,7 @@ bucket.remove()
 // returns a Promise that resolves to an empty string
 ```
 
-### Available functions on `PersonalNotification`, `TagNotification` and `PmNotification` objects:
+### Available functions on `PersonalNotification`, `TagNotification`, `PmNotification` and `DiscussionNotification` objects:
 ```javascript
 notification.get()
 // returns a Promise that resolves to a Notification object - you can use this to refresh
